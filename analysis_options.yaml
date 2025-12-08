@@ -1,0 +1,68 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  # Treat all info and warnings as errors for strict analysis
+  errors:
+    todo: ignore  # Allow TODO comments without failing
+    # Temporarily ignore deprecated_member_use until withOpacity->withValues migration is complete
+    deprecated_member_use: ignore
+    
+  # Enable strict type analysis - disabled for now due to extensive existing code patterns
+  # These can be enabled incrementally in future PRs
+  # language:
+  #   strict-casts: true
+  #   strict-inference: true
+  #   strict-raw-types: true
+
+linter:
+  rules:
+    # ═══════════════════════════════════════════════════════════════════════
+    # DISABLED: High-volume style rules - would require extensive refactoring
+    # These can be enabled incrementally in future PRs
+    # ═══════════════════════════════════════════════════════════════════════
+    prefer_const_constructors: false
+    prefer_const_declarations: false
+    prefer_const_literals_to_create_immutables: false
+    use_super_parameters: false
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # ENABLED: Important code quality and correctness rules
+    # ═══════════════════════════════════════════════════════════════════════
+    
+    # Type safety
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_types_as_parameter_names: true
+    
+    # Error prevention
+    avoid_empty_else: true
+    avoid_relative_lib_imports: true
+    avoid_slow_async_io: true
+    avoid_type_to_string: true
+    avoid_unused_constructor_parameters: true
+    avoid_void_async: true
+    cancel_subscriptions: true
+    close_sinks: true
+    collection_methods_unrelated_type: true
+    empty_statements: true
+    hash_and_equals: true
+    invalid_case_patterns: true
+    literal_only_boolean_expressions: true
+    no_adjacent_strings_in_list: true
+    no_duplicate_case_values: true
+    no_logic_in_create_state: true
+    test_types_in_equals: true
+    throw_in_finally: true
+    unnecessary_statements: true
+    unrelated_type_equality_checks: true
+    use_build_context_synchronously: true
+    valid_regexps: true
+    
+    # Code clarity
+    avoid_print: true
+    dangling_library_doc_comments: true
+    depend_on_referenced_packages: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_void_to_null: true
+    unnecessary_brace_in_string_interps: true

@@ -1,0 +1,660 @@
+import '../core/roll_engine.dart';
+import '../models/roll_result.dart';
+import '../models/results/result_types.dart';
+import '../models/results/display_sections.dart';
+import '../models/results/json_utils.dart';
+import 'details.dart' show Details, SkewType, PropertyResult, DetailResult;
+
+/// Object and Treasure generator preset for the Juice Oracle.
+/// Uses object-treasure.md for generating treasure details.
+class ObjectTreasure {
+  final RollEngine _rollEngine;
+
+  // === TRINKET (1) ===
+  static const List<String> trinketQualities = [
+    'Broken',      // 1
+    'Damaged',     // 2
+    'Worn',        // 3
+    'Simple',      // 4
+    'Exceptional', // 5
+    'Magic',       // 6
+  ];
+
+  static const List<String> trinketMaterials = [
+    'Wood',    // 1
+    'Bone',    // 2
+    'Leather', // 3
+    'Silver',  // 4
+    'Gold',    // 5
+    'Gem',     // 6
+  ];
+
+  static const List<String> trinketTypes = [
+    'Toy/Game',   // 1
+    'Bottle',     // 2
+    'Instrument', // 3
+    'Charm',      // 4
+    'Tool',       // 5
+    'Key',        // 6
+  ];
+
+  // === TREASURE (2) ===
+  static const List<String> treasureQualities = [
+    'Dusty',  // 1
+    'Worn',   // 2
+    'Sturdy', // 3
+    'Fine',   // 4
+    'New',    // 5
+    'Ornate', // 6
+  ];
+
+  static const List<String> treasureContainers = [
+    'None',    // 1
+    'Pouch',   // 2
+    'Box',     // 3
+    'Satchel', // 4
+    'Crate',   // 5
+    'Chest',   // 6
+  ];
+
+  static const List<String> treasureContents = [
+    'Food',         // 1
+    'Art',          // 2
+    'Deed',         // 3
+    'Silver Coins', // 4
+    'Gold Coins',   // 5
+    'Gems',         // 6
+  ];
+
+  // === DOCUMENT (3) ===
+  static const List<String> documentTypes = [
+    'Song',        // 1
+    'Picture',     // 2
+    'Letter/Note', // 3
+    'Scroll',      // 4
+    'Journal',     // 5
+    'Book',        // 6
+  ];
+
+  static const List<String> documentContents = [
+    'Lewd',      // 1
+    'Common',    // 2
+    'Map',       // 3
+    'Prophecy',  // 4
+    'Arcane',    // 5
+    'Forbidden', // 6
+  ];
+
+  static const List<String> documentSubjects = [
+    'Religion',  // 1
+    'Art',       // 2
+    'Science',   // 3
+    'Creatures', // 4
+    'History',   // 5
+    'Magic',     // 6
+  ];
+
+  // === ACCESSORY (4) ===
+  static const List<String> accessoryQualities = [
+    'Ruined',  // 1
+    'Crude',   // 2
+    'Simple',  // 3
+    'Fine',    // 4
+    'Crafted', // 5
+    'Magic',   // 6
+  ];
+
+  static const List<String> accessoryMaterials = [
+    'Wood',    // 1
+    'Bone',    // 2
+    'Leather', // 3
+    'Silver',  // 4
+    'Gold',    // 5
+    'Gem',     // 6
+  ];
+
+  static const List<String> accessoryTypes = [
+    'Headpiece', // 1
+    'Emblem',    // 2
+    'Earring',   // 3
+    'Bracelet',  // 4
+    'Necklace',  // 5
+    'Ring',      // 6
+  ];
+
+  // === WEAPON (5) ===
+  static const List<String> weaponQualities = [
+    'Broken',     // 1
+    'Improvised', // 2
+    'Rough',      // 3
+    'Simple',     // 4
+    'Martial',    // 5
+    'Masterwork', // 6
+  ];
+
+  static const List<String> weaponMaterials = [
+    'Wood',       // 1
+    'Bone',       // 2
+    'Steel',      // 3
+    'Silver',     // 4
+    'Mithral',    // 5
+    'Adamantine', // 6
+  ];
+
+  static const List<String> weaponTypes = [
+    'Axe/Hammer',     // 1
+    'Halberd/Spear',  // 2
+    'Sword/Dagger',   // 3
+    'Staff/Wand',     // 4
+    'Bow',            // 5
+    'Exotic',         // 6
+  ];
+
+  // === ARMOR (6) ===
+  static const List<String> armorQualities = [
+    'Broken',     // 1
+    'Improvised', // 2
+    'Tattered',   // 3
+    'Simple',     // 4
+    'Fine',       // 5
+    'Masterwork', // 6
+  ];
+
+  static const List<String> armorMaterials = [
+    'Cloth',      // 1
+    'Leather',    // 2
+    'Bone/Fur',   // 3
+    'Steel',      // 4
+    'Mithral',    // 5
+    'Adamantine', // 6
+  ];
+
+  static const List<String> armorTypes = [
+    'Headpiece', // 1
+    'Bottom',    // 2
+    'Gloves',    // 3
+    'Boots',     // 4
+    'Top',       // 5
+    'Shield',    // 6
+  ];
+
+  /// Treasure categories (d6)
+  static const List<String> treasureCategories = [
+    'Trinket',   // 1
+    'Treasure',  // 2
+    'Document',  // 3
+    'Accessory', // 4
+    'Weapon',    // 5
+    'Armor',     // 6
+  ];
+
+  ObjectTreasure([RollEngine? rollEngine])
+      : _rollEngine = rollEngine ?? RollEngine();
+
+  /// Roll 4d6 for a complete treasure as per Juice instructions.
+  /// First die = category, next 3 dice = properties.
+  /// Skew: advantage = better item, disadvantage = worse item.
+  ObjectTreasureResult generate({SkewType skew = SkewType.none}) {
+    // Roll 4d6 with optional skew
+    final die1 = _rollEngine.rollDie(6, skew: skew);
+    final die2 = _rollEngine.rollDie(6, skew: skew);
+    final die3 = _rollEngine.rollDie(6, skew: skew);
+    final die4 = _rollEngine.rollDie(6, skew: skew);
+    
+    return generateFromRolls(die1, die2, die3, die4);
+  }
+  
+  /// Generate treasure from specific 4d6 rolls.
+  /// die1 = category, die2/die3/die4 = properties.
+  ObjectTreasureResult generateFromRolls(int die1, int die2, int die3, int die4) {
+    switch (die1) {
+      case 1:
+        return _createTrinket(die2, die3, die4);
+      case 2:
+        return _createTreasure(die2, die3, die4);
+      case 3:
+        return _createDocument(die2, die3, die4);
+      case 4:
+        return _createAccessory(die2, die3, die4);
+      case 5:
+        return _createWeapon(die2, die3, die4);
+      case 6:
+        return _createArmor(die2, die3, die4);
+      default:
+        return _createTrinket(die2, die3, die4);
+    }
+  }
+
+  /// Generate treasure of a specific type (1-6) with skew.
+  ObjectTreasureResult generateByType(int type, {SkewType skew = SkewType.none}) {
+    switch (type) {
+      case 1:
+        return generateTrinket(skew: skew);
+      case 2:
+        return generateTreasure(skew: skew);
+      case 3:
+        return generateDocument(skew: skew);
+      case 4:
+        return generateAccessory(skew: skew);
+      case 5:
+        return generateWeapon(skew: skew);
+      case 6:
+        return generateArmor(skew: skew);
+      default:
+        return generateTrinket(skew: skew);
+    }
+  }
+
+  /// Generate a trinket (3d6 for properties).
+  ObjectTreasureResult generateTrinket({SkewType skew = SkewType.none}) {
+    final qualityRoll = _rollEngine.rollDie(6, skew: skew);
+    final materialRoll = _rollEngine.rollDie(6, skew: skew);
+    final typeRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createTrinket(qualityRoll, materialRoll, typeRoll);
+  }
+  
+  ObjectTreasureResult _createTrinket(int qualityRoll, int materialRoll, int typeRoll) {
+    return ObjectTreasureResult(
+      category: 'Trinket',
+      quality: trinketQualities[qualityRoll - 1],
+      material: trinketMaterials[materialRoll - 1],
+      itemType: trinketTypes[typeRoll - 1],
+      rolls: [1, qualityRoll, materialRoll, typeRoll],
+      columnLabels: ['Quality', 'Material', 'Type'],
+    );
+  }
+
+  /// Generate treasure (container + contents) (3d6 for properties).
+  ObjectTreasureResult generateTreasure({SkewType skew = SkewType.none}) {
+    final qualityRoll = _rollEngine.rollDie(6, skew: skew);
+    final containerRoll = _rollEngine.rollDie(6, skew: skew);
+    final contentsRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createTreasure(qualityRoll, containerRoll, contentsRoll);
+  }
+  
+  ObjectTreasureResult _createTreasure(int qualityRoll, int containerRoll, int contentsRoll) {
+    return ObjectTreasureResult(
+      category: 'Treasure',
+      quality: treasureQualities[qualityRoll - 1],
+      material: treasureContainers[containerRoll - 1],
+      itemType: treasureContents[contentsRoll - 1],
+      rolls: [2, qualityRoll, containerRoll, contentsRoll],
+      columnLabels: ['Quality', 'Container', 'Contents'],
+    );
+  }
+
+  /// Generate a document (3d6 for properties).
+  ObjectTreasureResult generateDocument({SkewType skew = SkewType.none}) {
+    final typeRoll = _rollEngine.rollDie(6, skew: skew);
+    final contentRoll = _rollEngine.rollDie(6, skew: skew);
+    final subjectRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createDocument(typeRoll, contentRoll, subjectRoll);
+  }
+  
+  ObjectTreasureResult _createDocument(int typeRoll, int contentRoll, int subjectRoll) {
+    return ObjectTreasureResult(
+      category: 'Document',
+      quality: documentTypes[typeRoll - 1],
+      material: documentContents[contentRoll - 1],
+      itemType: documentSubjects[subjectRoll - 1],
+      rolls: [3, typeRoll, contentRoll, subjectRoll],
+      columnLabels: ['Type', 'Content', 'Subject'],
+    );
+  }
+
+  /// Generate an accessory (3d6 for properties).
+  ObjectTreasureResult generateAccessory({SkewType skew = SkewType.none}) {
+    final qualityRoll = _rollEngine.rollDie(6, skew: skew);
+    final materialRoll = _rollEngine.rollDie(6, skew: skew);
+    final typeRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createAccessory(qualityRoll, materialRoll, typeRoll);
+  }
+  
+  ObjectTreasureResult _createAccessory(int qualityRoll, int materialRoll, int typeRoll) {
+    return ObjectTreasureResult(
+      category: 'Accessory',
+      quality: accessoryQualities[qualityRoll - 1],
+      material: accessoryMaterials[materialRoll - 1],
+      itemType: accessoryTypes[typeRoll - 1],
+      rolls: [4, qualityRoll, materialRoll, typeRoll],
+      columnLabels: ['Quality', 'Material', 'Type'],
+    );
+  }
+
+  /// Generate a weapon (3d6 for properties).
+  ObjectTreasureResult generateWeapon({SkewType skew = SkewType.none}) {
+    final qualityRoll = _rollEngine.rollDie(6, skew: skew);
+    final materialRoll = _rollEngine.rollDie(6, skew: skew);
+    final typeRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createWeapon(qualityRoll, materialRoll, typeRoll);
+  }
+  
+  ObjectTreasureResult _createWeapon(int qualityRoll, int materialRoll, int typeRoll) {
+    return ObjectTreasureResult(
+      category: 'Weapon',
+      quality: weaponQualities[qualityRoll - 1],
+      material: weaponMaterials[materialRoll - 1],
+      itemType: weaponTypes[typeRoll - 1],
+      rolls: [5, qualityRoll, materialRoll, typeRoll],
+      columnLabels: ['Quality', 'Material', 'Type'],
+    );
+  }
+
+  /// Generate armor (3d6 for properties).
+  ObjectTreasureResult generateArmor({SkewType skew = SkewType.none}) {
+    final qualityRoll = _rollEngine.rollDie(6, skew: skew);
+    final materialRoll = _rollEngine.rollDie(6, skew: skew);
+    final typeRoll = _rollEngine.rollDie(6, skew: skew);
+
+    return _createArmor(qualityRoll, materialRoll, typeRoll);
+  }
+  
+  ObjectTreasureResult _createArmor(int qualityRoll, int materialRoll, int typeRoll) {
+    return ObjectTreasureResult(
+      category: 'Armor',
+      quality: armorQualities[qualityRoll - 1],
+      material: armorMaterials[materialRoll - 1],
+      itemType: armorTypes[typeRoll - 1],
+      rolls: [6, qualityRoll, materialRoll, typeRoll],
+      columnLabels: ['Quality', 'Material', 'Type'],
+    );
+  }
+
+  /// Generate a full item as per Item Creation procedure in Juice instructions.
+  /// 
+  /// To create an item:
+  /// 1. Roll 4d6 on the Object/Treasure table (base item description)
+  /// 2. Roll two properties (1d10+1d6 each) to flesh it out
+  /// 3. Optionally roll a color for appearance or elemental powers
+  /// 
+  /// Example from instructions:
+  /// 4d6 -> 4,3,4,5 -> "Accessory: Simple Silver Necklace"
+  /// Property: 1d10+1d6 -> 9,5 -> Major Value
+  /// Property: 1d10+1d6 -> 5,4 -> Moderate Power
+  ItemCreationResult generateFullItem({
+    SkewType skew = SkewType.none,
+    bool includeColor = false,
+  }) {
+    final details = Details(_rollEngine);
+    
+    // Step 1: Roll 4d6 for base item
+    final baseItem = generate(skew: skew);
+    
+    // Step 2: Roll two properties (1d10+1d6 each)
+    final property1 = details.rollProperty();
+    final property2 = details.rollProperty();
+    
+    // Step 3: Optionally roll color
+    DetailResult? color;
+    if (includeColor) {
+      color = details.rollColor();
+    }
+    
+    return ItemCreationResult(
+      baseItem: baseItem,
+      property1: property1,
+      property2: property2,
+      color: color,
+    );
+  }
+}
+
+/// Result of an Object/Treasure generation.
+class ObjectTreasureResult extends RollResult {
+  final String category;
+  final String quality;
+  final String material;
+  final String itemType;
+  final List<int> rolls;
+  final List<String> columnLabels;
+
+  ObjectTreasureResult({
+    required this.category,
+    required this.quality,
+    required this.material,
+    required this.itemType,
+    required this.rolls,
+    this.columnLabels = const ['Quality', 'Material', 'Type'],
+    DateTime? timestamp,
+  }) : super(
+          type: RollType.objectTreasure,
+          description: category,
+          diceResults: rolls,
+          total: rolls.reduce((a, b) => a + b),
+          interpretation: _buildInterpretation(category, quality, material, itemType, columnLabels),
+          timestamp: timestamp,
+          metadata: {
+            'category': category,
+            'quality': quality,
+            'material': material,
+            'itemType': itemType,
+            'columnLabels': columnLabels,
+            'rolls': rolls,
+          },
+        );
+
+  @override
+  String get className => 'ObjectTreasureResult';
+
+  /// UI display type for generic rendering.
+  @override
+  ResultDisplayType get displayType => ResultDisplayType.generated;
+
+  /// Structured display sections for generic rendering.
+  @override
+  List<ResultSection> get sections => [
+    DisplaySections.diceRoll(
+      notation: '4d6',
+      dice: rolls,
+    ),
+    DisplaySections.labeledValue(
+      label: 'Category',
+      value: category,
+      iconName: 'inventory_2',
+    ),
+    DisplaySections.labeledValue(
+      label: columnLabels[0],
+      value: quality,
+    ),
+    DisplaySections.labeledValue(
+      label: columnLabels[1],
+      value: material,
+    ),
+    DisplaySections.labeledValue(
+      label: columnLabels[2],
+      value: itemType,
+      isEmphasized: true,
+    ),
+  ];
+
+  factory ObjectTreasureResult.fromJson(Map<String, dynamic> json) {
+    final meta = json['metadata'] as Map<String, dynamic>;
+    final diceResults = (json['diceResults'] as List).cast<int>();
+    return ObjectTreasureResult(
+      category: meta['category'] as String,
+      quality: meta['quality'] as String,
+      material: meta['material'] as String,
+      itemType: meta['itemType'] as String,
+      rolls: (meta['rolls'] as List?)?.cast<int>() ?? diceResults,
+      columnLabels: (meta['columnLabels'] as List?)?.cast<String>() ?? const ['Quality', 'Material', 'Type'],
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+  }
+  
+  static String _buildInterpretation(String category, String quality, String material, String itemType, List<String> labels) {
+    // Build descriptive output based on category
+    switch (category) {
+      case 'Treasure':
+        // Treasure: quality container with contents
+        if (material == 'None') {
+          return '$quality $itemType';
+        }
+        return '$quality $material full of $itemType';
+      case 'Document':
+        // Document: type with content about subject
+        return '$quality $material $itemType';
+      default:
+        // Default: quality material type
+        return '$quality $material $itemType';
+    }
+  }
+
+  String get fullDescription => interpretation ?? '$quality $material $itemType';
+  
+  /// Get formatted roll details showing each column
+  String get rollDetails {
+    final parts = <String>[];
+    parts.add('Category: $category (${rolls[0]})');
+    if (rolls.length >= 4) {
+      parts.add('${columnLabels[0]}: $quality (${rolls[1]})');
+      parts.add('${columnLabels[1]}: $material (${rolls[2]})');
+      parts.add('${columnLabels[2]}: $itemType (${rolls[3]})');
+    }
+    return parts.join('\n');
+  }
+
+  @override
+  String toString() => '$category: $fullDescription';
+}
+
+/// Result of the full Item Creation procedure.
+/// Combines 4d6 Object/Treasure + 2 Property rolls + optional Color.
+/// 
+/// Example interpretation:
+/// "Accessory: Simple Silver Necklace" with
+/// Property 1: "Major Value" (1d10=9, 1d6=5)
+/// Property 2: "Moderate Power" (1d10=5, 1d6=4)
+/// Color: "Crimson Red" (optional, for appearance/elemental)
+class ItemCreationResult extends RollResult {
+  final ObjectTreasureResult baseItem;
+  final PropertyResult property1;
+  final PropertyResult property2;
+  final DetailResult? color;
+
+  ItemCreationResult({
+    required this.baseItem,
+    required this.property1,
+    required this.property2,
+    this.color,
+  }) : super(
+          type: RollType.objectTreasure,
+          description: 'Item Creation',
+          diceResults: _combineDiceResults(baseItem, property1, property2, color),
+          total: baseItem.total + property1.total + property2.total + (color?.total ?? 0),
+          interpretation: _buildInterpretation(baseItem, property1, property2, color),
+          metadata: {
+            'baseItem': baseItem.toJson(),
+            'property1': property1.toJson(),
+            'property2': property2.toJson(),
+            if (color != null) 'color': color.toJson(),
+          },
+        );
+
+  @override
+  String get className => 'ItemCreationResult';
+
+  /// Serialization - keep in sync with fromJson below.
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'metadata': {
+      'baseItem': baseItem.toJson(),
+      'property1': property1.toJson(),
+      'property2': property2.toJson(),
+      if (color != null) 'color': color!.toJson(),
+    },
+  };
+
+  /// Deserialization - keep in sync with toJson above.
+  factory ItemCreationResult.fromJson(Map<String, dynamic> json) {
+    final meta = json['metadata'] as Map<String, dynamic>;
+    
+    // Safely cast nested Maps (JSON may return Map<dynamic, dynamic>)
+    final baseItemJson = requireMap(meta['baseItem'], 'baseItem');
+    final prop1Json = requireMap(meta['property1'], 'property1');
+    final prop2Json = requireMap(meta['property2'], 'property2');
+    final colorJson = safeMap(meta['color']);
+    
+    return ItemCreationResult(
+      baseItem: ObjectTreasureResult.fromJson(baseItemJson),
+      property1: PropertyResult.fromJson(prop1Json),
+      property2: PropertyResult.fromJson(prop2Json),
+      color: colorJson != null ? DetailResult.fromJson(colorJson) : null,
+    );
+  }
+
+  /// UI display type for generic rendering.
+  @override
+  ResultDisplayType get displayType => ResultDisplayType.generated;
+
+  /// Structured display sections for generic rendering.
+  @override
+  List<ResultSection> get sections {
+    final result = <ResultSection>[
+      DisplaySections.labeledValue(
+        label: baseItem.category,
+        value: baseItem.fullDescription,
+        isEmphasized: true,
+        iconName: 'inventory_2',
+      ),
+      DisplaySections.property(
+        property: property1.property,
+        intensity: property1.intensityDescription,
+      ),
+      DisplaySections.property(
+        property: property2.property,
+        intensity: property2.intensityDescription,
+      ),
+    ];
+    
+    if (color != null) {
+      result.add(DisplaySections.labeledValue(
+        label: 'Color',
+        value: '${color!.emoji ?? ''} ${color!.result}'.trim(),
+      ));
+    }
+    
+    return result;
+  }
+
+  static List<int> _combineDiceResults(
+    ObjectTreasureResult baseItem,
+    PropertyResult property1,
+    PropertyResult property2,
+    DetailResult? color,
+  ) {
+    return [
+      ...baseItem.diceResults,
+      ...property1.diceResults,
+      ...property2.diceResults,
+      if (color != null) ...color.diceResults,
+    ];
+  }
+
+  static String _buildInterpretation(
+    ObjectTreasureResult baseItem,
+    PropertyResult property1,
+    PropertyResult property2,
+    DetailResult? color,
+  ) {
+    final buffer = StringBuffer();
+    buffer.writeln('${baseItem.category}: ${baseItem.fullDescription}');
+    buffer.writeln('• ${property1.interpretation}');
+    buffer.writeln('• ${property2.interpretation}');
+    if (color != null) {
+      buffer.write('• Color: ${color.interpretation}');
+    }
+    return buffer.toString().trim();
+  }
+
+  @override
+  String toString() {
+    final colorStr = color != null ? ' [${color!.result}]' : '';
+    return 'Item: ${baseItem.fullDescription}$colorStr (${property1.intensityDescription} ${property1.property}, ${property2.intensityDescription} ${property2.property})';
+  }
+}
