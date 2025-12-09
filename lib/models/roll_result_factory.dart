@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'roll_result.dart';
+import 'results/ironsworn_result.dart';
 import '../presets/fate_check.dart';
 import '../presets/random_event.dart';
 import '../presets/monster_encounter.dart';
@@ -150,6 +151,14 @@ class RollResultFactory {
     
     // Name Generator
     'NameResult': NameResult.fromJson,
+    
+    // Ironsworn
+    'IronswornActionResult': IronswornActionResult.fromJson,
+    'IronswornProgressResult': IronswornProgressResult.fromJson,
+    'IronswornOracleResult': IronswornOracleResult.fromJson,
+    'IronswornYesNoResult': IronswornYesNoResult.fromJson,
+    'IronswornCursedOracleResult': IronswornCursedOracleResult.fromJson,
+    'IronswornMomentumBurnResult': IronswornMomentumBurnResult.fromJson,
   };
 
   /// Reconstruct a RollResult from JSON, using the appropriate subclass.
