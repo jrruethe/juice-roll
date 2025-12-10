@@ -1,8 +1,6 @@
 import '../core/roll_engine.dart';
 import '../core/fate_dice_formatter.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 import 'random_event.dart';
 
@@ -472,61 +470,6 @@ class FateCheckResult extends RollResult {
       default:
         return 'Unknown';
     }
-  }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.fateCheck;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Fate dice section
-    result.add(DisplaySections.fateDice(
-      dice: fateDice,
-      label: '2dF',
-    ));
-    
-    // Intensity section
-    result.add(DisplaySections.labeledValue(
-      label: '1d6',
-      value: '$intensity',
-      sublabel: intensityDescription,
-    ));
-    
-    // Outcome section
-    result.add(DisplaySections.outcome(
-      value: outcome.displayText,
-      isPositive: outcome.isYes,
-    ));
-    
-    // Special trigger if present
-    if (specialTrigger != null) {
-      result.add(DisplaySections.trigger(
-        value: specialTrigger!.displayText,
-        colorValue: specialTrigger == SpecialTrigger.randomEvent 
-            ? 0xFFFFB300 // Amber for Random Event
-            : 0xFF7C4DFF, // Purple for Invalid Assumption
-      ));
-    }
-    
-    // Auto-rolled Random Event if present
-    if (randomEventResult != null) {
-      result.add(DisplaySections.nested(
-        label: 'Focus',
-        value: randomEventResult!.focus,
-        dice: [randomEventResult!.focusRoll],
-      ));
-      result.add(DisplaySections.twoWordMeaning(
-        word1: randomEventResult!.modifier,
-        word2: randomEventResult!.idea,
-        dice: [randomEventResult!.modifierRoll, randomEventResult!.ideaRoll],
-      ));
-    }
-    
-    return result;
   }
 
   @override

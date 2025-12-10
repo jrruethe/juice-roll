@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 import 'details.dart' show SkewType;
 
@@ -331,39 +329,6 @@ class SensoryDetailResult extends RollResult {
     );
   }
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '3d10',
-      dice: [senseRoll, detailRoll, whereRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Sensory',
-      value: 'You $sense something $detail $where',
-      isEmphasized: true,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Sense',
-      value: sense,
-      sublabel: 'Roll: $senseRoll',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Detail',
-      value: detail,
-      sublabel: 'Roll: $detailRoll',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Where',
-      value: where,
-      sublabel: 'Roll: $whereRoll',
-    ),
-  ];
-
   @override
   String toString() => 'Sensory: You $sense something $detail $where';
 }
@@ -429,31 +394,6 @@ class EmotionalAtmosphereResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d10',
-      dice: [emotionRoll, causeRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Emotion',
-      value: selectedEmotion,
-      sublabel: isPositive ? 'Positive' : 'Negative',
-      colorValue: isPositive ? 0xFF4CAF50 : 0xFFF44336,
-      isEmphasized: true,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Because',
-      value: cause,
-      sublabel: 'Roll: $causeRoll',
-    ),
-  ];
 
   @override
   String toString() =>
@@ -522,22 +462,6 @@ class FullImmersionResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.hierarchical;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Full Immersion',
-      value: 'You ${sensory.sense.toLowerCase()} something ${sensory.detail.toLowerCase()} ${sensory.where.toLowerCase()}, and it causes ${emotional.selectedEmotion.toLowerCase()} because ${emotional.cause}',
-      isEmphasized: true,
-    ),
-    ...sensory.sections,
-    ...emotional.sections,
-  ];
 
   @override
   String toString() =>

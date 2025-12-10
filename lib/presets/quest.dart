@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import 'details.dart';
 import 'dungeon_generator.dart';
 import 'random_event.dart';
@@ -415,59 +413,6 @@ class QuestResult extends RollResult {
 
   /// Check if the location was expanded from a sub-table.
   bool get hasLocationExpansion => locationExpanded != null;
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Quest sentence as emphasized header
-    result.add(DisplaySections.labeledValue(
-      label: 'Quest Hook',
-      value: questSentence,
-      isEmphasized: true,
-      iconName: 'auto_stories',
-    ));
-    
-    // Component breakdown
-    result.add(DisplaySections.labeledValue(
-      label: 'Objective',
-      value: objective,
-      sublabel: 'Roll: $objectiveRoll',
-    ));
-    result.add(DisplaySections.labeledValue(
-      label: 'Description',
-      value: descriptionDisplay,
-      sublabel: descriptionSubRoll != null 
-          ? 'Rolls: $descriptionRoll → $descriptionSubRoll'
-          : 'Roll: $descriptionRoll',
-    ));
-    result.add(DisplaySections.labeledValue(
-      label: 'Focus',
-      value: focusDisplay,
-      sublabel: focusSubRoll != null 
-          ? 'Rolls: $focusRoll → $focusSubRoll'
-          : 'Roll: $focusRoll',
-    ));
-    result.add(DisplaySections.labeledValue(
-      label: 'Preposition',
-      value: preposition,
-      sublabel: 'Roll: $prepositionRoll',
-    ));
-    result.add(DisplaySections.labeledValue(
-      label: 'Location',
-      value: locationDisplay,
-      sublabel: locationSubRoll != null 
-          ? 'Rolls: $locationRoll → $locationSubRoll'
-          : 'Roll: $locationRoll',
-    ));
-    
-    return result;
-  }
 
   @override
   String toString() => 'Quest: $questSentence';

@@ -121,7 +121,7 @@ void main() {
         expect(output, contains('Strong Hit'));
       });
 
-      test('sections provides structured display data', () {
+      test('creates valid result', () {
         final result = IronswornActionResult(
           actionDie: 4,
           challengeDice: [3, 5],
@@ -129,7 +129,7 @@ void main() {
           adds: 0,
         );
         
-        expect(result.sections.isNotEmpty, isTrue);
+        expect(result.outcome, equals(IronswornOutcome.strongHit));
       });
     });
 

@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Random Event preset for the Juice Oracle.
 /// Generates random events using the tables from random-event-challenge.md and random-tables.md.
@@ -351,29 +349,6 @@ class RandomEventResult extends RollResult {
 
   String get eventPhrase => '$modifier $idea';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.hierarchical;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '3d10',
-      dice: [focusRoll, modifierRoll, ideaRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Focus',
-      value: focus,
-      sublabel: ideaCategory,
-    ),
-    DisplaySections.twoWordMeaning(
-      word1: modifier,
-      word2: idea,
-      dice: [modifierRoll, ideaRoll],
-    ),
-  ];
-
   @override
   String toString() => 'Random Event: $focus - $modifier $idea';
 }
@@ -426,24 +401,6 @@ class IdeaResult extends RollResult {
 
   String get phrase => '$modifier $idea';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d10',
-      dice: [modifierRoll, ideaRoll],
-    ),
-    DisplaySections.twoWordMeaning(
-      word1: modifier,
-      word2: idea,
-      dice: [modifierRoll, ideaRoll],
-    ),
-  ];
-
   @override
   String toString() => '$ideaCategory: $modifier $idea';
 }
@@ -485,23 +442,6 @@ class RandomEventFocusResult extends RollResult {
   @override
   String toString() => 'Random Event: $focus';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d10',
-      dice: [focusRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Focus',
-      value: focus,
-      isEmphasized: true,
-    ),
-  ];
 }
 
 /// Result of rolling on a single table (Modifier, Idea, Event, Person, or Object).
@@ -545,17 +485,4 @@ class SingleTableResult extends RollResult {
   @override
   String toString() => '$tableName: $result';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.tableLookup(
-      tableName: tableName,
-      roll: roll,
-      result: result,
-    ),
-  ];
 }

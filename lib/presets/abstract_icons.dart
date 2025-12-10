@@ -1,6 +1,4 @@
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../core/roll_engine.dart';
 
 /// Abstract Icons generator based on the Juice Oracle Right Extension.
@@ -88,19 +86,6 @@ class AbstractIconResult extends RollResult {
 
   @override
   String get className => 'AbstractIconResult';
-
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.visual;
-
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(notation: '1d10 + 1d6', dice: diceResults),
-    DisplaySections.labeledValue(
-      label: 'Abstract Icon',
-      value: '($rowLabel, $colLabel)',
-      iconName: 'image',
-    ),
-  ];
 
   factory AbstractIconResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

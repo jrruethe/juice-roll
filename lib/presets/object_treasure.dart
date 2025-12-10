@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 import 'details.dart' show Details, SkewType, PropertyResult, DetailResult;
 
@@ -441,37 +439,6 @@ class ObjectTreasureResult extends RollResult {
   @override
   String get className => 'ObjectTreasureResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '4d6',
-      dice: rolls,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Category',
-      value: category,
-      iconName: 'inventory_2',
-    ),
-    DisplaySections.labeledValue(
-      label: columnLabels[0],
-      value: quality,
-    ),
-    DisplaySections.labeledValue(
-      label: columnLabels[1],
-      value: material,
-    ),
-    DisplaySections.labeledValue(
-      label: columnLabels[2],
-      value: itemType,
-      isEmphasized: true,
-    ),
-  ];
-
   factory ObjectTreasureResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -586,40 +553,6 @@ class ItemCreationResult extends RollResult {
       property2: PropertyResult.fromJson(prop2Json),
       color: colorJson != null ? DetailResult.fromJson(colorJson) : null,
     );
-  }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: baseItem.category,
-        value: baseItem.fullDescription,
-        isEmphasized: true,
-        iconName: 'inventory_2',
-      ),
-      DisplaySections.property(
-        property: property1.property,
-        intensity: property1.intensityDescription,
-      ),
-      DisplaySections.property(
-        property: property2.property,
-        intensity: property2.intensityDescription,
-      ),
-    ];
-    
-    if (color != null) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Color',
-        value: '${color!.emoji ?? ''} ${color!.result}'.trim(),
-      ));
-    }
-    
-    return result;
   }
 
   static List<int> _combineDiceResults(

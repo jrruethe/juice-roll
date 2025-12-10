@@ -5,17 +5,11 @@
 // import 'package:juice_roll/models/results/results.dart';
 // ```
 
-// Core types and enums
-export 'result_types.dart';
-
 // Registry for serialization
 export 'result_registry.dart';
 
 // Lightweight value objects for embedded data
 export 'value_objects.dart';
-
-// Display section builders
-export 'display_sections.dart';
 
 // Generic table lookup result
 export 'table_lookup_result.dart';

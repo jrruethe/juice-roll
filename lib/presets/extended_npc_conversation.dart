@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import 'details.dart' show SkewType;
 
 /// Extended NPC Conversation Tables preset for the Juice Oracle.
@@ -532,26 +530,6 @@ class InformationResult extends RollResult {
   @override
   String get className => 'InformationResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Type',
-      value: informationType,
-      dice: [typeRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Topic',
-      value: topic,
-      dice: [topicRoll],
-      isEmphasized: true,
-    ),
-  ];
-
   factory InformationResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -598,25 +576,6 @@ class CompanionResponseResult extends RollResult {
 
   @override
   String get className => 'CompanionResponseResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: skew == SkewType.none ? '1d100' : (skew == SkewType.advantage ? '1d100@+' : '1d100@-'),
-      dice: allRolls,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Response',
-      value: response,
-      sublabel: favorLevel,
-      isEmphasized: true,
-    ),
-  ];
 
   factory CompanionResponseResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -683,24 +642,6 @@ class DialogTopicResult extends RollResult {
 
   @override
   String get className => 'DialogTopicResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d100',
-      dice: [roll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Topic',
-      value: topic,
-      isEmphasized: true,
-    ),
-  ];
 
   factory DialogTopicResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

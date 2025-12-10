@@ -1,6 +1,4 @@
 import '../roll_result.dart';
-import 'result_types.dart';
-import 'display_sections.dart';
 
 /// Possible outcomes for Ironsworn action and progress rolls.
 enum IronswornOutcome {
@@ -100,7 +98,6 @@ class IronswornActionResult extends RollResult {
            'outcome': _calculateOutcome(actionDie + statBonus + adds, challengeDice).name,
            'isMatch': challengeDice[0] == challengeDice[1],
          },
-         displayType: ResultDisplayType.ironsworn,
        );
 
   @override
@@ -132,60 +129,6 @@ class IronswornActionResult extends RollResult {
     final outcome = _calculateOutcome(actionScore, challengeDice);
     final matchText = isMatch ? ' with a Match!' : '';
     return '${outcome.displayText}$matchText';
-  }
-
-  /// UI display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Action die section
-    result.add(DisplaySections.labeledValue(
-      label: '1d6',
-      value: '$actionDie',
-      sublabel: statBonus != 0 || adds != 0 
-          ? 'Action Die' 
-          : null,
-    ));
-    
-    // Stat/adds if present
-    if (statBonus != 0 || adds != 0) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Bonus',
-        value: '+${statBonus + adds}',
-        sublabel: 'Stat + Adds',
-      ));
-    }
-    
-    // Action score
-    result.add(DisplaySections.labeledValue(
-      label: 'Action Score',
-      value: '$actionScore',
-      sublabel: 'vs Challenge',
-    ));
-    
-    // Challenge dice section
-    result.add(DisplaySections.labeledValue(
-      label: '2d10',
-      value: '${challengeDice[0]}, ${challengeDice[1]}',
-      sublabel: isMatch ? 'Match!' : 'Challenge Dice',
-    ));
-    
-    // Outcome section
-    result.add(DisplaySections.outcome(
-      value: outcome.displayText,
-      isPositive: outcome.isSuccess,
-    ));
-    
-    // Match indicator if applicable
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Match!',
-        colorValue: outcome.isSuccess ? 0xFF4CAF50 : 0xFFFF5722, // Green or orange
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornActionResult.fromJson(Map<String, dynamic> json) {
@@ -246,7 +189,6 @@ class IronswornProgressResult extends RollResult {
            'outcome': _calculateOutcome(progressScore, challengeDice).name,
            'isMatch': challengeDice[0] == challengeDice[1],
          },
-         displayType: ResultDisplayType.ironsworn,
        );
 
   @override
@@ -270,40 +212,6 @@ class IronswornProgressResult extends RollResult {
     final isMatch = challengeDice[0] == challengeDice[1];
     final matchText = isMatch ? ' with a Match!' : '';
     return '${outcome.displayText}$matchText';
-  }
-
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Progress score section
-    result.add(DisplaySections.labeledValue(
-      label: 'Progress',
-      value: '$progressScore',
-      sublabel: 'vs Challenge',
-    ));
-    
-    // Challenge dice section
-    result.add(DisplaySections.labeledValue(
-      label: '2d10',
-      value: '${challengeDice[0]}, ${challengeDice[1]}',
-      sublabel: isMatch ? 'Match!' : 'Challenge Dice',
-    ));
-    
-    // Outcome section
-    result.add(DisplaySections.outcome(
-      value: outcome.displayText,
-      isPositive: outcome.isSuccess,
-    ));
-    
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Match!',
-        colorValue: outcome.isSuccess ? 0xFF4CAF50 : 0xFFFF5722,
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornProgressResult.fromJson(Map<String, dynamic> json) {
@@ -378,26 +286,6 @@ class IronswornOracleResult extends RollResult {
       return '$roll (Match - Twist!)';
     }
     return '$roll';
-  }
-
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: '1d$dieType',
-        value: '$oracleRoll',
-        sublabel: oracleTable,
-      ),
-    ];
-    
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Match - Twist!',
-        colorValue: 0xFFFFB300, // Amber
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornOracleResult.fromJson(Map<String, dynamic> json) {
@@ -504,7 +392,6 @@ class IronswornYesNoResult extends RollResult {
            'isYes': roll >= odds.yesThreshold,
            'isMatch': _isDoubles(roll),
          },
-         displayType: ResultDisplayType.ironsworn,
        );
 
   @override
@@ -534,31 +421,6 @@ class IronswornYesNoResult extends RollResult {
       return isYes ? 'Yes! (Extreme)' : 'No! (Extreme)';
     }
     return isYes ? 'Yes' : 'No';
-  }
-
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    result.add(DisplaySections.labeledValue(
-      label: '1d100',
-      value: '$roll',
-      sublabel: odds.rangeDescription,
-    ));
-    
-    result.add(DisplaySections.outcome(
-      value: answerText,
-      isPositive: isYes,
-    ));
-    
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Extreme Result!',
-        colorValue: 0xFFFFB300, // Amber
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornYesNoResult.fromJson(Map<String, dynamic> json) {
@@ -615,7 +477,6 @@ class IronswornCursedOracleResult extends RollResult {
            'isMatch': _isDoubles(oracleRoll),
            if (oracleTable != null) 'oracleTable': oracleTable,
          },
-         displayType: ResultDisplayType.ironsworn,
        );
 
   @override
@@ -638,39 +499,6 @@ class IronswornCursedOracleResult extends RollResult {
       parts.add('CURSED!');
     }
     return parts.join(' + ');
-  }
-
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    result.add(DisplaySections.labeledValue(
-      label: '1d100',
-      value: '$oracleRoll',
-      sublabel: oracleTable ?? 'Oracle',
-    ));
-    
-    result.add(DisplaySections.labeledValue(
-      label: 'Cursed d10',
-      value: '$cursedDie',
-      sublabel: isCursed ? 'Cursed!' : null,
-    ));
-    
-    if (isCursed) {
-      result.add(DisplaySections.trigger(
-        value: 'CURSED! Consult cursed table',
-        colorValue: 0xFF7B1FA2, // Purple for supernatural
-      ));
-    }
-    
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Match - Twist!',
-        colorValue: 0xFFFFB300, // Amber
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornCursedOracleResult.fromJson(Map<String, dynamic> json) {
@@ -764,7 +592,6 @@ class IronswornMomentumBurnResult extends RollResult {
            'isMatch': challengeDice[0] == challengeDice[1],
            'momentumBurned': true,
          },
-         displayType: ResultDisplayType.ironsworn,
        );
 
   @override
@@ -801,55 +628,6 @@ class IronswornMomentumBurnResult extends RollResult {
       return '${originalOutcome.displayText} → ${burnedOutcome.displayText} (Momentum Burned!)$matchText';
     }
     return '${burnedOutcome.displayText} (Momentum: $momentum)$matchText';
-  }
-
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Original roll info
-    result.add(DisplaySections.labeledValue(
-      label: '1d6',
-      value: '$actionDie',
-      sublabel: 'Original: $originalActionScore',
-    ));
-    
-    // Momentum burn
-    result.add(DisplaySections.labeledValue(
-      label: 'Momentum',
-      value: '$momentumValue',
-      sublabel: 'Burned!',
-    ));
-    
-    // Challenge dice
-    result.add(DisplaySections.labeledValue(
-      label: '2d10',
-      value: '${challengeDice[0]}, ${challengeDice[1]}',
-      sublabel: isMatch ? 'Match!' : 'Challenge Dice',
-    ));
-    
-    // Show upgrade if applicable
-    if (wasUpgraded) {
-      result.add(DisplaySections.trigger(
-        value: '${originalOutcome.displayText} → ${burnedOutcome.displayText}',
-        colorValue: 0xFF4CAF50, // Green for upgrade
-      ));
-    }
-    
-    // Final outcome
-    result.add(DisplaySections.outcome(
-      value: burnedOutcome.displayText,
-      isPositive: burnedOutcome.isSuccess,
-    ));
-    
-    if (isMatch) {
-      result.add(DisplaySections.trigger(
-        value: 'Match!',
-        colorValue: burnedOutcome.isSuccess ? 0xFF4CAF50 : 0xFFFF5722,
-      ));
-    }
-    
-    return result;
   }
 
   factory IronswornMomentumBurnResult.fromJson(Map<String, dynamic> json) {

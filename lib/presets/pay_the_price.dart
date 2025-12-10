@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Pay the Price preset for the Juice Oracle.
 /// Determines consequences on failure using pay-the-price.md.
@@ -112,26 +110,6 @@ class PayThePriceResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d10',
-      dice: [roll],
-    ),
-    DisplaySections.labeledValue(
-      label: isMajorTwist ? 'Major Twist' : 'Consequence',
-      value: result,
-      isEmphasized: true,
-      colorValue: isMajorTwist ? 0xFFF44336 : 0xFFFF9800, // Red for major, orange for normal
-      iconName: isMajorTwist ? 'bolt' : 'warning',
-    ),
-  ];
 
   @override
   String toString() =>

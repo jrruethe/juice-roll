@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Name Generator preset for the Juice Oracle.
 /// Generates fantasy names using d20 syllable tables.
@@ -361,30 +359,6 @@ class NameResult extends RollResult {
 
   @override
   String get className => 'NameResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '${rolls.length}d20',
-      dice: rolls,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Name',
-      value: name,
-      isEmphasized: true,
-      iconName: 'person',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Style',
-      value: style.displayText,
-      sublabel: method.displayText,
-    ),
-  ];
 
   factory NameResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

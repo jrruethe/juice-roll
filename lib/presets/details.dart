@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Details generator preset for the Juice Oracle.
 /// Uses details.md for colors, properties, and history.
@@ -298,30 +296,6 @@ class DetailResult extends RollResult {
     );
   }
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: secondRoll != null ? '2d10' : '1d10',
-      dice: [roll, if (secondRoll != null) secondRoll!],
-    ),
-    DisplaySections.labeledValue(
-      label: detailType.displayText,
-      value: result,
-      iconName: emoji,
-      isEmphasized: true,
-    ),
-    if (requiresFollowUp)
-      DisplaySections.labeledValue(
-        label: 'Follow-up',
-        value: 'Roll on $result table',
-      ),
-  ];
-
   @override
   String toString() =>
       '${detailType.displayText}: ${emoji != null ? '$emoji ' : ''}$result';
@@ -387,23 +361,6 @@ class PropertyResult extends RollResult {
 
   String get intensityDescription => _intensityText(intensityRoll);
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d10 + 1d6',
-      dice: [propertyRoll, intensityRoll],
-    ),
-    DisplaySections.property(
-      property: property,
-      intensity: intensityDescription,
-    ),
-  ];
-
   @override
   String toString() => 'Property: $property ($intensityDescription)';
 }
@@ -458,23 +415,6 @@ class DualPropertyResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.property(
-      property: property1.property,
-      intensity: property1.intensityDescription,
-    ),
-    DisplaySections.property(
-      property: property2.property,
-      intensity: property2.intensityDescription,
-    ),
-  ];
 
   @override
   String toString() => 

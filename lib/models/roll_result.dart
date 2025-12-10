@@ -1,5 +1,3 @@
-import 'results/result_types.dart';
-
 /// Types of rolls that can be performed.
 enum RollType {
   // Basic dice
@@ -94,14 +92,6 @@ class RollResult {
   final DateTime timestamp;
   final Map<String, dynamic>? metadata;
   final String? imagePath;
-  
-  /// Display type hint for the UI layer.
-  /// Defaults to [ResultDisplayType.standard] if not specified.
-  final ResultDisplayType displayType;
-  
-  /// Structured display sections for generic rendering.
-  /// When provided, the UI can render this result without type-specific code.
-  final List<ResultSection> sections;
 
   RollResult({
     required this.type,
@@ -112,8 +102,6 @@ class RollResult {
     DateTime? timestamp,
     this.metadata,
     this.imagePath,
-    this.displayType = ResultDisplayType.standard,
-    this.sections = const [],
   }) : timestamp = timestamp ?? DateTime.now();
 
   /// Get the class name for serialization.
@@ -132,32 +120,11 @@ class RollResult {
     'timestamp': timestamp.toIso8601String(),
     'metadata': metadata,
     'imagePath': imagePath,
-    'displayType': displayType.name,
-    // Only serialize sections if non-empty to save space
-    if (sections.isNotEmpty) 'sections': sections.map((s) => s.toJson()).toList(),
   };
 
   /// Deserialize from JSON.
   /// Returns a base RollResult that preserves all display information.
   factory RollResult.fromJson(Map<String, dynamic> json) {
-    // Parse displayType with fallback to standard
-    ResultDisplayType displayType = ResultDisplayType.standard;
-    if (json['displayType'] != null) {
-      try {
-        displayType = ResultDisplayType.values.byName(json['displayType'] as String);
-      } catch (_) {
-        // Keep default if parsing fails
-      }
-    }
-    
-    // Parse sections if present
-    List<ResultSection> sections = const [];
-    if (json['sections'] != null) {
-      sections = (json['sections'] as List)
-          .map((s) => ResultSection.fromJson(s as Map<String, dynamic>))
-          .toList();
-    }
-    
     return RollResult(
       type: RollType.values.byName(json['type'] as String),
       description: json['description'] as String,
@@ -169,8 +136,6 @@ class RollResult {
           ? Map<String, dynamic>.from(json['metadata'] as Map) 
           : null,
       imagePath: json['imagePath'] as String?,
-      displayType: displayType,
-      sections: sections,
     );
   }
 

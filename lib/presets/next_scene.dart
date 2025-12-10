@@ -1,8 +1,6 @@
 import '../core/roll_engine.dart';
 import '../core/fate_dice_formatter.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import 'interrupt_plot_point.dart';
 import 'random_event.dart';
 
@@ -235,34 +233,6 @@ class NextSceneResult extends RollResult {
   /// Get symbolic representation of the Fate dice.
   String get fateSymbols => FateDiceFormatter.diceToSymbols(fateDice);
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.fateCheck;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final isPositive = sceneType == SceneType.normal || 
-        sceneType == SceneType.interruptFavorable;
-    
-    return [
-      DisplaySections.fateDice(
-        dice: fateDice,
-        label: '2dF',
-      ),
-      DisplaySections.outcome(
-        value: sceneType.displayText,
-        isPositive: isPositive,
-      ),
-      if (sceneType.requiresFollowUp)
-        DisplaySections.labeledValue(
-          label: 'Follow-up',
-          value: sceneType.followUpRoll!,
-          sublabel: sceneType.description,
-        ),
-    ];
-  }
-
   @override
   String toString() {
     final buffer = StringBuffer();
@@ -308,20 +278,6 @@ class FocusResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.tableLookup(
-      tableName: 'Focus',
-      roll: roll,
-      result: focus,
-    ),
-  ];
 
   @override
   String toString() => 'Focus: $focus';
@@ -414,54 +370,6 @@ class NextSceneWithFollowUpResult extends RollResult {
       return '${plotPointResult!.category}: ${plotPointResult!.event}';
     }
     return null;
-  }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.hierarchical;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Scene result
-    final isPositive = sceneResult.sceneType == SceneType.normal || 
-        sceneResult.sceneType == SceneType.interruptFavorable;
-    
-    result.add(DisplaySections.fateDice(
-      dice: sceneResult.fateDice,
-      label: '2dF',
-    ));
-    result.add(DisplaySections.outcome(
-      value: sceneResult.sceneType.displayText,
-      isPositive: isPositive,
-    ));
-    
-    // Follow-up results
-    if (focusResult != null) {
-      result.add(DisplaySections.nested(
-        label: 'Focus',
-        value: focusResult!.focus,
-        dice: [focusResult!.roll],
-      ));
-    }
-    if (ideaResult != null) {
-      result.add(DisplaySections.twoWordMeaning(
-        word1: ideaResult!.modifier,
-        word2: ideaResult!.idea,
-        dice: [ideaResult!.modifierRoll, ideaResult!.ideaRoll],
-      ));
-    }
-    if (plotPointResult != null) {
-      result.add(DisplaySections.nested(
-        label: plotPointResult!.category,
-        value: plotPointResult!.event,
-        dice: [plotPointResult!.categoryRoll, plotPointResult!.eventRoll],
-      ));
-    }
-    
-    return result;
   }
 
   @override

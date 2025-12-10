@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Interrupt / Plot Point preset for the Juice Oracle.
 /// Uses interrupt-plot-point.md for story interruptions.
@@ -178,30 +176,6 @@ class InterruptPlotPointResult extends RollResult {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.hierarchical;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d10',
-      dice: [categoryRoll, eventRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Category',
-      value: category,
-      sublabel: 'Roll: $categoryRoll',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Event',
-      value: event,
-      sublabel: 'Roll: $eventRoll',
-      isEmphasized: true,
-    ),
-  ];
 
   @override
   String toString() => 'Interrupt ($category): $event';

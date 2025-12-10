@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../data/monster_encounter_data.dart' as data;
 
 /// Difficulty levels for monster encounters
@@ -81,44 +79,6 @@ class FullMonsterEncounterResult extends RollResult {
 
   @override
   String get className => 'FullMonsterEncounterResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: 'Difficulty',
-        value: difficulty.name,
-        sublabel: environmentFormula,
-        isEmphasized: true,
-      ),
-    ];
-    
-    if (hasBoss && bossMonster != null) {
-      result.add(DisplaySections.creature(
-        description: '1× $bossMonster (Boss)',
-      ));
-    }
-    
-    for (final m in monsters.where((m) => m.count > 0)) {
-      result.add(DisplaySections.creature(
-        description: '${m.count}× ${m.name}',
-      ));
-    }
-    
-    if (wasDoubles) {
-      result.add(DisplaySections.trigger(
-        value: 'DOUBLES!',
-        colorValue: 0xFFF44336,
-      ));
-    }
-    
-    return result;
-  }
 
   factory FullMonsterEncounterResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -213,38 +173,6 @@ class MonsterEncounterResult extends RollResult {
   @override
   String get className => 'MonsterEncounterResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.creature(
-        description: monster,
-        level: difficulty.name,
-        dice: diceResults,
-      ),
-    ];
-    
-    if (isDeadly) {
-      result.add(DisplaySections.trigger(
-        value: '💀 DEADLY',
-        colorValue: 0xFFF44336,
-      ));
-    }
-    
-    if (wasDoubles) {
-      result.add(DisplaySections.trigger(
-        value: 'DOUBLES!',
-        colorValue: 0xFFFF9800,
-      ));
-    }
-    
-    return result;
-  }
-
   factory MonsterEncounterResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     return MonsterEncounterResult(
@@ -297,26 +225,6 @@ class MonsterTracksResult extends RollResult {
 
   @override
   String get className => 'MonsterTracksResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d6-1',
-      dice: diceResults,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Tracks',
-      value: tracks,
-      sublabel: 'Modifier: $modifier',
-      isEmphasized: true,
-      iconName: 'pets',
-    ),
-  ];
 
   factory MonsterTracksResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

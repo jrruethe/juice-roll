@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Advantage type for skewing rolls.
 enum DcSkew {
@@ -336,30 +334,6 @@ class FullChallengeResult extends RollResult {
   String toString() =>
       'Challenge: $physicalSkill (DC $physicalDc) or $mentalSkill (DC $mentalDc) via $dcMethod';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Physical',
-      value: '$physicalSkill (DC $physicalDc)',
-      sublabel: 'Roll: $physicalRoll',
-      iconName: 'fitness_center',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Mental',
-      value: '$mentalSkill (DC $mentalDc)',
-      sublabel: 'Roll: $mentalRoll',
-      iconName: 'psychology',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Method',
-      value: dcMethod,
-    ),
-  ];
 }
 
 /// Result of a DC roll.
@@ -403,23 +377,6 @@ class DcResult extends RollResult {
   @override
   String toString() => 'DC $dc ($method)';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: method.contains('100') ? '1d100' : '1d10',
-      dice: [roll],
-    ),
-    DisplaySections.challenge(
-      description: 'Difficulty Class',
-      dc: 'DC $dc',
-      dice: [roll],
-    ),
-  ];
 }
 
 /// Result of a Quick DC roll.
@@ -464,23 +421,6 @@ class QuickDcResult extends RollResult {
   @override
   String toString() => 'Quick DC: $dc (${dice.join('+')}+6)';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d6+6',
-      dice: dice,
-    ),
-    DisplaySections.challenge(
-      description: 'Quick DC',
-      dc: 'DC $dc',
-      dice: dice,
-    ),
-  ];
 }
 
 /// Result of a challenge skill roll.
@@ -532,23 +472,6 @@ class ChallengeSkillResult extends RollResult {
   String toString() =>
       '${challengeType.displayText} Challenge: $skill (DC $suggestedDc)';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d10',
-      dice: [roll],
-    ),
-    DisplaySections.challenge(
-      description: '${challengeType.displayText}: $skill',
-      dc: 'DC $suggestedDc',
-      dice: [roll],
-    ),
-  ];
 }
 
 /// Result of a percentage chance roll.
@@ -617,22 +540,4 @@ class PercentageChanceResult extends RollResult {
     );
   }
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d10',
-      dice: [roll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Chance',
-      value: '$minPercent-$maxPercent%',
-      sublabel: chanceDescription,
-      isEmphasized: true,
-    ),
-  ];
 }

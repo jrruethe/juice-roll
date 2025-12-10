@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 import '../data/wilderness_data.dart' as data;
 
@@ -476,37 +474,6 @@ class WildernessAreaResult extends RollResult {
   @override
   String get className => 'WildernessAreaResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.stateful;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: 'Environment',
-        value: environment,
-        isEmphasized: true,
-        iconName: 'terrain',
-      ),
-      DisplaySections.labeledValue(
-        label: 'Type',
-        value: typeName,
-        sublabel: '+$typeModifier',
-      ),
-    ];
-    
-    if (isTransition && previousEnvironment != null) {
-      result.insert(0, DisplaySections.labeledValue(
-        label: 'From',
-        value: previousEnvironment!,
-      ));
-    }
-    
-    return result;
-  }
-
   factory WildernessAreaResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     WildernessState? state;
@@ -645,52 +612,6 @@ class WildernessEncounterResult extends RollResult {
   @override
   String get className => 'WildernessEncounterResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.stateful;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: 'd$dieSize',
-        dice: secondRoll != null ? [roll, secondRoll!] : [roll],
-        label: skewUsed != 'straight' ? 'd$dieSize@$skewUsed' : 'd$dieSize',
-      ),
-      DisplaySections.labeledValue(
-        label: 'Encounter',
-        value: encounter,
-        isEmphasized: true,
-        iconName: 'explore',
-      ),
-    ];
-    
-    if (becameLost) {
-      result.add(DisplaySections.trigger(
-        value: 'LOST!',
-        colorValue: 0xFFF44336,
-        iconName: 'warning',
-      ));
-    }
-    if (becameFound) {
-      result.add(DisplaySections.trigger(
-        value: 'FOUND!',
-        colorValue: 0xFF4CAF50,
-        iconName: 'check_circle',
-      ));
-    }
-    if (followUpResult != null) {
-      result.add(DisplaySections.nested(
-        label: encounter,
-        value: followUpResult!,
-        dice: followUpRoll != null ? [followUpRoll!] : null,
-      ));
-    }
-    
-    return result;
-  }
-
   factory WildernessEncounterResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     WildernessState? state;
@@ -777,29 +698,6 @@ class WildernessWeatherResult extends RollResult {
   @override
   String get className => 'WildernessWeatherResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: formula,
-      dice: secondRoll != null ? [baseRoll, secondRoll!] : [baseRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Weather',
-      value: weather,
-      isEmphasized: true,
-      iconName: 'wb_sunny',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Location',
-      value: '$typeName $environment',
-    ),
-  ];
-
   factory WildernessWeatherResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     return WildernessWeatherResult(
@@ -849,20 +747,6 @@ class WildernessDetailResult extends RollResult {
   @override
   String get className => 'WildernessDetailResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.tableLookup(
-      tableName: detailType,
-      roll: roll,
-      result: result,
-    ),
-  ];
-
   factory WildernessDetailResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     return WildernessDetailResult(
@@ -910,22 +794,6 @@ class MonsterLevelResult extends RollResult {
 
   @override
   String get className => 'MonsterLevelResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '1d6+$modifier@$advantageType',
-      dice: secondRoll != null ? [baseRoll, secondRoll!] : [baseRoll],
-    ),
-    DisplaySections.creature(
-      description: 'Level $monsterLevel',
-    ),
-  ];
 
   factory MonsterLevelResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

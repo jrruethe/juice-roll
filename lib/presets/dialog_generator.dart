@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Dialog Generator preset for the Juice Oracle.
 /// 
@@ -311,46 +309,6 @@ class DialogResult extends RollResult {
 
   @override
   String get className => 'DialogResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.stateful;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: '2d10',
-        dice: [directionRoll, subjectRoll],
-      ),
-      DisplaySections.labeledValue(
-        label: 'Fragment',
-        value: newFragment,
-        sublabel: isPast ? 'Past' : 'Present',
-        isEmphasized: true,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Tone',
-        value: tone,
-        sublabel: 'about $subject',
-      ),
-    ];
-    
-    if (isDoubles) {
-      result.add(DisplaySections.trigger(
-        value: 'DOUBLES - Conversation Ends',
-        colorValue: 0xFFFF9800,
-      ));
-    } else {
-      result.add(DisplaySections.labeledValue(
-        label: 'Movement',
-        value: movementDescription,
-      ));
-    }
-    
-    return result;
-  }
 
   factory DialogResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

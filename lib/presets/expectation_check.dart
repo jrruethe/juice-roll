@@ -1,8 +1,6 @@
 import '../core/roll_engine.dart';
 import '../core/fate_dice_formatter.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import 'discover_meaning.dart';
 
 /// Expectation Check preset for the Juice Oracle.
@@ -242,43 +240,6 @@ class ExpectationCheckResult extends RollResult {
   
   /// Whether this result has an auto-rolled meaning (for Modified Idea outcome)
   bool get hasMeaning => meaningResult != null;
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.fateCheck;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    // Fate dice section
-    result.add(DisplaySections.fateDice(
-      dice: fateDice,
-      label: '2dF',
-    ));
-    
-    // Outcome section - determine if positive based on outcome type
-    final isPositive = outcome == ExpectationOutcome.expected ||
-        outcome == ExpectationOutcome.expectedIntensified ||
-        outcome == ExpectationOutcome.favorable;
-    
-    result.add(DisplaySections.outcome(
-      value: outcome.displayText,
-      isPositive: isPositive,
-    ));
-    
-    // Auto-rolled meaning if present (Modified Idea outcome)
-    if (meaningResult != null) {
-      result.add(DisplaySections.twoWordMeaning(
-        word1: meaningResult!.adjective,
-        word2: meaningResult!.noun,
-        dice: [meaningResult!.adjectiveRoll, meaningResult!.nounRoll],
-      ));
-    }
-    
-    return result;
-  }
 
   @override
   String toString() {

@@ -9,7 +9,6 @@
 // The tableName metadata distinguishes between different table sources.
 
 import '../roll_result.dart';
-import 'result_types.dart';
 
 /// A generic result from rolling on a lookup table.
 ///
@@ -62,8 +61,6 @@ class TableLookupResult extends RollResult {
     bool requiresFollowUp = false,
     String? followUpTable,
     DateTime? timestamp,
-    ResultDisplayType displayType = ResultDisplayType.standard,
-    List<ResultSection> sections = const [],
   }) : super(
           type: type,
           description: description,
@@ -71,10 +68,6 @@ class TableLookupResult extends RollResult {
           total: roll,
           interpretation: _buildInterpretation(result, subResult, emoji),
           timestamp: timestamp,
-          displayType: displayType,
-          sections: sections.isEmpty
-              ? _buildDefaultSections(tableName, roll, result, emoji)
-              : sections,
           metadata: {
             'tableName': tableName,
             'roll': roll,
@@ -243,21 +236,6 @@ class TableLookupResult extends RollResult {
       buffer.write(': $subResult');
     }
     return buffer.toString();
-  }
-
-  static List<ResultSection> _buildDefaultSections(
-    String tableName,
-    int roll,
-    String result,
-    String? emoji,
-  ) {
-    return [
-      ResultSection(
-        label: tableName,
-        value: emoji != null ? '$emoji $result' : result,
-        relatedDice: [roll],
-      ),
-    ];
   }
 
   @override

@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Discover Meaning preset for the Juice Oracle.
 /// Generates two-word prompts for open interpretation.
@@ -121,24 +119,6 @@ class DiscoverMeaningResult extends RollResult {
   }
 
   String get meaning => '$adjective $noun';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d20',
-      dice: [adjectiveRoll, nounRoll],
-    ),
-    DisplaySections.twoWordMeaning(
-      word1: adjective,
-      word2: noun,
-      dice: [adjectiveRoll, nounRoll],
-    ),
-  ];
 
   @override
   String toString() => 'Discover Meaning: $adjective $noun';

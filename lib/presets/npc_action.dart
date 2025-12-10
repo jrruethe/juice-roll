@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 import '../data/npc_action_data.dart' as data;
 import 'details.dart';
@@ -677,24 +675,6 @@ class NpcActionResult extends RollResult {
   @override
   String get className => 'NpcActionResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: 'd${dieSize ?? 10}',
-      dice: allRolls ?? [roll],
-    ),
-    DisplaySections.labeledValue(
-      label: column.displayText,
-      value: result,
-      isEmphasized: true,
-    ),
-  ];
-
   factory NpcActionResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -826,53 +806,6 @@ class MotiveWithFollowUpResult extends RollResult {
 
   @override
   String get className => 'MotiveWithFollowUpResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.hierarchical;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: '1d10',
-        dice: [roll],
-        label: 'Motive Roll',
-      ),
-      DisplaySections.labeledValue(
-        label: 'Motive',
-        value: motive,
-        isEmphasized: !hasFollowUp,
-      ),
-    ];
-    
-    if (historyResult != null) {
-      result.add(DisplaySections.nested(
-        label: 'History',
-        value: historyResult!.result,
-        dice: historyResult!.diceResults,
-      ));
-    }
-    
-    if (focusResult != null) {
-      result.add(DisplaySections.nested(
-        label: 'Focus',
-        value: focusResult!.focus,
-        dice: focusResult!.diceResults,
-      ));
-      
-      if (focusExpanded != null && focusExpansionRoll != null) {
-        result.add(DisplaySections.nested(
-          label: focusResult!.focus,
-          value: focusExpanded!,
-          dice: [focusExpansionRoll!],
-        ));
-      }
-    }
-    
-    return result;
-  }
 
   factory MotiveWithFollowUpResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -1082,35 +1015,6 @@ class SimpleNpcProfileResult extends RollResult {
   @override
   String get className => 'SimpleNpcProfileResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: 'Personality',
-        value: personality,
-        dice: [personalityRoll],
-        iconName: 'person',
-      ),
-      DisplaySections.labeledValue(
-        label: 'Need',
-        value: need,
-        dice: needAllRolls ?? [needRoll],
-      ),
-      DisplaySections.labeledValue(
-        label: 'Motive',
-        value: motiveDisplay,
-        dice: [motiveRoll],
-      ),
-    ];
-    
-    return result;
-  }
-
   factory SimpleNpcProfileResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -1284,36 +1188,6 @@ class NpcProfileResult extends RollResult {
   @override
   String get className => 'NpcProfileResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Personality',
-      value: personalityDisplay,
-      iconName: 'person',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Need',
-      value: need,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Motive',
-      value: motiveDisplay,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Color',
-      value: '${color.emoji ?? ''} ${color.result}'.trim(),
-    ),
-    DisplaySections.labeledValue(
-      label: 'Properties',
-      value: propertiesDisplay,
-    ),
-  ];
-
   factory NpcProfileResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -1444,25 +1318,6 @@ class DualPersonalityResult extends RollResult {
       secondary: meta['secondary'] as String,
     );
   }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Primary',
-      value: primary,
-      dice: [primaryRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Secondary',
-      value: secondary,
-      dice: [secondaryRoll],
-    ),
-  ];
 
   @override
   String toString() => 'Personality: $primary, yet $secondary';
@@ -1699,51 +1554,6 @@ class ComplexNpcResult extends RollResult {
       property1: PropertyResult.fromJson(prop1Json),
       property2: PropertyResult.fromJson(prop2Json),
     );
-  }
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[];
-    
-    if (name != null) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Name',
-        value: name!.name,
-        isEmphasized: true,
-        iconName: 'person',
-      ));
-    }
-    
-    result.addAll([
-      DisplaySections.labeledValue(
-        label: 'Personality',
-        value: personalityDisplay,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Need',
-        value: need,
-        sublabel: needSkew.name,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Motive',
-        value: motiveDisplay,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Color',
-        value: '${color.emoji ?? ''} ${color.result}'.trim(),
-      ),
-      DisplaySections.labeledValue(
-        label: 'Properties',
-        value: propertiesDisplay,
-      ),
-    ]);
-    
-    return result;
   }
 
   @override

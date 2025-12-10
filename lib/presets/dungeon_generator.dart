@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../data/dungeon_data.dart' as data;
 import 'wilderness.dart';
 
@@ -529,25 +527,6 @@ class DungeonNameResult extends RollResult {
   @override
   String get className => 'DungeonNameResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '3d10',
-      dice: [typeRoll, descriptionRoll, subjectRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Dungeon Name',
-      value: name,
-      isEmphasized: true,
-      iconName: 'castle',
-    ),
-  ];
-
   factory DungeonNameResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -611,44 +590,6 @@ class DungeonAreaResult extends RollResult {
 
   @override
   String get className => 'DungeonAreaResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.stateful;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: '1d10',
-        dice: [roll1, roll2],
-        label: phase.displayText,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Area',
-        value: areaType,
-        isEmphasized: true,
-      ),
-    ];
-    
-    if (passage != null) {
-      result.add(DisplaySections.nested(
-        label: 'Passage',
-        value: passage!.result,
-        dice: passage!.diceResults,
-      ));
-    }
-    
-    if (isDoubles) {
-      result.add(DisplaySections.trigger(
-        value: 'DOUBLES! Phase Change',
-        colorValue: 0xFFFF9800,
-      ));
-    }
-    
-    return result;
-  }
 
   factory DungeonAreaResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -727,20 +668,6 @@ class DungeonDetailResult extends RollResult {
   @override
   String get className => 'DungeonDetailResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.tableLookup(
-      tableName: detailType,
-      roll: roll,
-      result: result,
-    ),
-  ];
-
   factory DungeonDetailResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -791,29 +718,6 @@ class FullDungeonAreaResult extends RollResult {
 
   @override
   String get className => 'FullDungeonAreaResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Area',
-      value: area.areaType,
-      isEmphasized: true,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Condition',
-      value: condition.result,
-    ),
-    if (area.isDoubles)
-      DisplaySections.trigger(
-        value: 'DOUBLES! Phase Change',
-        colorValue: 0xFFFF9800,
-      ),
-  ];
 
   factory FullDungeonAreaResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -883,25 +787,6 @@ class DungeonMonsterResult extends RollResult {
   @override
   String get className => 'DungeonMonsterResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Descriptor',
-      value: descriptor,
-      dice: [descriptorRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Ability',
-      value: ability,
-      dice: [abilityRoll],
-    ),
-  ];
-
   factory DungeonMonsterResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -948,25 +833,6 @@ class DungeonTrapResult extends RollResult {
 
   @override
   String get className => 'DungeonTrapResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Action',
-      value: action,
-      dice: [actionRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Subject',
-      value: subject,
-      dice: [subjectRoll],
-    ),
-  ];
 
   factory DungeonTrapResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -1045,50 +911,6 @@ class DungeonEncounterResult extends RollResult {
 
   @override
   String get className => 'DungeonEncounterResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: 'Encounter',
-        value: encounterRoll.result,
-        isEmphasized: true,
-        iconName: 'warning',
-      ),
-    ];
-    
-    if (monster != null) {
-      result.add(DisplaySections.creature(
-        description: monster!.monsterDescription,
-        dice: monster!.diceResults,
-      ));
-    }
-    if (trap != null) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Trap',
-        value: trap!.trapDescription,
-      ));
-    }
-    if (feature != null) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Feature',
-        value: feature!.result,
-      ));
-    }
-    if (naturalHazard != null) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Hazard',
-        value: naturalHazard!.result,
-      ));
-    }
-    
-    return result;
-  }
 
   factory DungeonEncounterResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
@@ -1264,51 +1086,6 @@ class TwoPassAreaResult extends RollResult {
   @override
   String get className => 'TwoPassAreaResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.stateful;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: hadFirstDoubles ? '1d10@-' : '1d10@+',
-        dice: [roll1, roll2],
-      ),
-      DisplaySections.labeledValue(
-        label: 'Area',
-        value: areaType,
-        isEmphasized: true,
-      ),
-      DisplaySections.labeledValue(
-        label: 'Condition',
-        value: condition.result,
-      ),
-    ];
-    
-    if (passage != null) {
-      result.add(DisplaySections.nested(
-        label: 'Passage',
-        value: passage!.result,
-      ));
-    }
-    
-    if (stopMapGeneration) {
-      result.add(DisplaySections.trigger(
-        value: '2nd DOUBLES - STOP!',
-        colorValue: 0xFFF44336,
-      ));
-    } else if (isDoubles) {
-      result.add(DisplaySections.trigger(
-        value: '1st DOUBLES - switch to @-',
-        colorValue: 0xFFFF9800,
-      ));
-    }
-    
-    return result;
-  }
-
   factory TwoPassAreaResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final timestamp = DateTime.parse(json['timestamp'] as String);
@@ -1453,38 +1230,6 @@ class TrapProcedureResult extends RollResult {
 
   @override
   String get className => 'TrapProcedureResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Trap',
-      value: trap.trapDescription,
-      isEmphasized: true,
-      iconName: 'warning',
-    ),
-    DisplaySections.challenge(
-      description: 'Perception Check',
-      dc: 'DC $dc',
-      dice: dcRolls,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Method',
-      value: isSearching ? 'Active Search (10 min)' : 'Passive Perception',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Pass',
-      value: passOutcome,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Fail',
-      value: failOutcome,
-    ),
-  ];
 
   factory TrapProcedureResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 
 /// Distance from center (rings of the bullseye)
 enum LocationDistance {
@@ -59,15 +57,6 @@ class LocationResult extends RollResult {
 
   @override
   String get className => 'LocationResult';
-
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(notation: '1d100', dice: diceResults),
-    DisplaySections.location(name: compassDescription, sublabel: 'Grid [$row,$column]'),
-  ];
 
   factory LocationResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

@@ -1,7 +1,5 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../data/settlement_data.dart' as data;
 import 'details.dart';
 import 'random_event.dart';
@@ -313,25 +311,6 @@ class SettlementNameResult extends RollResult {
   @override
   String get className => 'SettlementNameResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d10',
-      dice: [prefixRoll, suffixRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Settlement Name',
-      value: name,
-      isEmphasized: true,
-      iconName: 'location_city',
-    ),
-  ];
-
   factory SettlementNameResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -388,32 +367,6 @@ class SettlementDetailResult extends RollResult {
   @override
   String get className => 'SettlementDetailResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.diceRoll(
-        notation: 'd${dieSize ?? 10}',
-        dice: subRoll != null ? [roll, subRoll!] : [roll],
-      ),
-      DisplaySections.labeledValue(
-        label: detailType,
-        value: this.result,
-        isEmphasized: true,
-      ),
-    ];
-    
-    if (detailDescription != null) {
-      result.add(DisplaySections.text(value: detailDescription!));
-    }
-    
-    return result;
-  }
-
   factory SettlementDetailResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -463,24 +416,6 @@ class EstablishmentCountResult extends RollResult {
   @override
   String get className => 'EstablishmentCountResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d6 ($skewUsed)',
-      dice: dice,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Establishment Count',
-      value: '$count',
-      sublabel: settlementType.name,
-    ),
-  ];
-
   factory EstablishmentCountResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -528,31 +463,6 @@ class MultiEstablishmentResult extends RollResult {
   @override
   String get className => 'MultiEstablishmentResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: 'Count',
-        value: '${countResult.count} establishments',
-        sublabel: countResult.skewUsed,
-      ),
-    ];
-    
-    for (var i = 0; i < establishments.length; i++) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Est. ${i + 1}',
-        value: establishments[i].result,
-      ));
-    }
-    
-    return result;
-  }
-
   // ignore: avoid_unused_constructor_parameters - factory signature requires json
   factory MultiEstablishmentResult.fromJson(Map<String, dynamic> json) {
     // Cannot fully reconstruct nested objects from JSON metadata
@@ -595,29 +505,6 @@ class FullSettlementResult extends RollResult {
 
   @override
   String get className => 'FullSettlementResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Settlement',
-      value: name.name,
-      isEmphasized: true,
-      iconName: 'location_city',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Establishment',
-      value: establishment.result,
-    ),
-    DisplaySections.labeledValue(
-      label: 'News',
-      value: news.result,
-    ),
-  ];
 
   // ignore: avoid_unused_constructor_parameters - factory signature requires json
   factory FullSettlementResult.fromJson(Map<String, dynamic> json) {
@@ -664,39 +551,6 @@ class CompleteSettlementResult extends RollResult {
 
   @override
   String get className => 'CompleteSettlementResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections {
-    final typeLabel = settlementType == SettlementType.village ? 'Village' : 'City';
-    final result = <ResultSection>[
-      DisplaySections.labeledValue(
-        label: typeLabel,
-        value: name.name,
-        isEmphasized: true,
-        iconName: 'location_city',
-      ),
-    ];
-    
-    for (var i = 0; i < establishments.establishments.length; i++) {
-      result.add(DisplaySections.labeledValue(
-        label: 'Est. ${i + 1}',
-        value: establishments.establishments[i].result,
-      ));
-    }
-    
-    result.add(DisplaySections.labeledValue(
-      label: 'News',
-      value: news.result,
-      iconName: 'campaign',
-    ));
-    
-    return result;
-  }
 
   // ignore: avoid_unused_constructor_parameters - factory signature requires json
   factory CompleteSettlementResult.fromJson(Map<String, dynamic> json) {
@@ -771,33 +625,6 @@ class EstablishmentNameResult extends RollResult {
   @override
   String get className => 'EstablishmentNameResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.standard;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.diceRoll(
-      notation: '2d10',
-      dice: [colorRoll, objectRoll],
-    ),
-    DisplaySections.labeledValue(
-      label: 'Establishment',
-      value: '$colorEmoji $name',
-      isEmphasized: true,
-      iconName: 'store',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Color',
-      value: '$colorEmoji $color',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Object',
-      value: object,
-    ),
-  ];
-
   factory EstablishmentNameResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     final diceResults = (json['diceResults'] as List).cast<int>();
@@ -852,23 +679,6 @@ class SettlementPropertiesResult extends RollResult {
   @override
   String get className => 'SettlementPropertiesResult';
 
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.twoColumn;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.property(
-      property: property1.property,
-      intensity: property1.intensityDescription,
-    ),
-    DisplaySections.property(
-      property: property2.property,
-      intensity: property2.intensityDescription,
-    ),
-  ];
-
   factory SettlementPropertiesResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;
     return SettlementPropertiesResult(
@@ -921,33 +731,6 @@ class SimpleNpcResult extends RollResult {
 
   @override
   String get className => 'SimpleNpcResult';
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.generated;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.labeledValue(
-      label: 'Name',
-      value: name.name,
-      isEmphasized: true,
-      iconName: 'person',
-    ),
-    DisplaySections.labeledValue(
-      label: 'Personality',
-      value: profile.personality,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Need',
-      value: profile.need,
-    ),
-    DisplaySections.labeledValue(
-      label: 'Motive',
-      value: profile.motiveDisplay,
-    ),
-  ];
 
   factory SimpleNpcResult.fromJson(Map<String, dynamic> json) {
     final meta = json['metadata'] as Map<String, dynamic>;

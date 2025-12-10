@@ -1,8 +1,6 @@
 import '../core/roll_engine.dart';
 import '../core/fate_dice_formatter.dart';
 import '../models/roll_result.dart';
-import '../models/results/result_types.dart';
-import '../models/results/display_sections.dart';
 import '../models/results/json_utils.dart';
 
 /// Scale preset for the Juice Oracle.
@@ -149,27 +147,6 @@ class ScaleResult extends RollResult {
 
   /// Whether this is no change.
   bool get isNoChange => multiplier == 1.0;
-
-  /// UI display type for generic rendering.
-  @override
-  ResultDisplayType get displayType => ResultDisplayType.fateCheck;
-
-  /// Structured display sections for generic rendering.
-  @override
-  List<ResultSection> get sections => [
-    DisplaySections.fateDice(
-      dice: fateDice,
-      label: '2dF',
-    ),
-    DisplaySections.labeledValue(
-      label: '1d6',
-      value: '$intensity',
-    ),
-    DisplaySections.outcome(
-      value: modifier,
-      isPositive: isIncrease,
-    ),
-  ];
 
   @override
   String toString() => 'Scale: [$fateSymbols] + $intensity = $modifier';
