@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'ui/home_screen.dart';
 import 'ui/theme/juice_theme.dart';
+import 'ui/widgets/result_displays/result_displays.dart';
 
 void main() {
+  // Initialize display builders registry
+  // This enables the new modular display system for roll results
+  registerAllDisplayBuilders();
+  
   runApp(const JuiceRollApp());
 }
 

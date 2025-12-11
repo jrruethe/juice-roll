@@ -1,0 +1,734 @@
+import 'package:flutter/material.dart';
+import '../../../core/fate_dice_formatter.dart';
+import '../../../presets/fate_check.dart';
+import '../../../presets/expectation_check.dart';
+import '../../../presets/scale.dart';
+import '../../../presets/next_scene.dart';
+import '../../../presets/random_event.dart';
+import '../../../presets/discover_meaning.dart';
+import '../../theme/juice_theme.dart';
+import '../result_display_registry.dart';
+
+/// Oracle result display builders.
+/// 
+/// This module handles display widgets for all Oracle-related results:
+/// - FateCheckResult - Yes/No with modifiers and special triggers
+/// - ExpectationCheckResult - Testing assumptions
+/// - ScaleResult - Increase/decrease scales
+/// - NextSceneResult - Scene type determination
+/// - NextSceneWithFollowUpResult - Scene with auto-rolled follow-ups
+/// - RandomEventResult - Full random event (focus + modifier + idea)
+/// - RandomEventFocusResult - Just the focus
+/// - IdeaResult - Modifier + Idea pair
+/// - DiscoverMeaningResult - Adjective + Noun pair
+
+/// Registers all Oracle display builders with the registry.
+void registerOracleDisplays() {
+  ResultDisplayRegistry.register<FateCheckResult>(buildFateCheckDisplay);
+  ResultDisplayRegistry.register<ExpectationCheckResult>(buildExpectationCheckDisplay);
+  ResultDisplayRegistry.register<ScaleResult>(buildScaleDisplay);
+  ResultDisplayRegistry.register<NextSceneResult>(buildNextSceneDisplay);
+  ResultDisplayRegistry.register<NextSceneWithFollowUpResult>(buildNextSceneWithFollowUpDisplay);
+  ResultDisplayRegistry.register<RandomEventResult>(buildRandomEventDisplay);
+  ResultDisplayRegistry.register<RandomEventFocusResult>(buildRandomEventFocusDisplay);
+  ResultDisplayRegistry.register<IdeaResult>(buildIdeaDisplay);
+  ResultDisplayRegistry.register<DiscoverMeaningResult>(buildDiscoverMeaningDisplay);
+}
+
+// =============================================================================
+// FATE CHECK DISPLAY
+// =============================================================================
+
+Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
+  final isPositive = result.outcome.isYes;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          // Fate dice symbols with label
+          FateDiceFormatter.buildLabeledFateDiceDisplay(
+            label: '2dF',
+            dice: result.fateDice,
+            theme: theme,
+          ),
+          const SizedBox(width: 12),
+          // Intensity die with label
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: JuiceTheme.mystic.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
+            ),
+            child: Text(
+              '1d6: ${result.intensity}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: 'monospace',
+                fontWeight: FontWeight.bold,
+                color: JuiceTheme.mystic,
+              ),
+            ),
+          ),
+          const Spacer(),
+          // Outcome chip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: isPositive
+                  ? JuiceTheme.success.withValues(alpha: 0.2)
+                  : JuiceTheme.danger.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+              ),
+            ),
+            child: Text(
+              result.outcome.displayText,
+              style: TextStyle(
+                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+      // Special trigger (Random Event / Invalid Assumption)
+      if (result.hasSpecialTrigger) ...[
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: result.specialTrigger == SpecialTrigger.randomEvent
+                ? JuiceTheme.gold.withValues(alpha: 0.2)
+                : JuiceTheme.mystic.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: result.specialTrigger == SpecialTrigger.randomEvent
+                  ? JuiceTheme.gold
+                  : JuiceTheme.mystic,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                result.specialTrigger == SpecialTrigger.randomEvent
+                    ? Icons.flash_on
+                    : Icons.warning_amber,
+                size: 16,
+                color: result.specialTrigger == SpecialTrigger.randomEvent
+                    ? JuiceTheme.gold
+                    : JuiceTheme.mystic,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                result.specialTrigger!.displayText,
+                style: TextStyle(
+                  color: result.specialTrigger == SpecialTrigger.randomEvent
+                      ? JuiceTheme.gold
+                      : JuiceTheme.mystic,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      // Auto-rolled Random Event details
+      if (result.hasRandomEvent) ...[
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: JuiceTheme.gold.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: JuiceTheme.gold.withValues(alpha: 0.4)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Focus: ${result.randomEventResult!.focus}',
+                style: TextStyle(
+                  color: JuiceTheme.gold,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${result.randomEventResult!.modifier} ${result.randomEventResult!.idea}',
+                style: TextStyle(
+                  color: JuiceTheme.parchment,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      // Intensity description
+      const SizedBox(height: 4),
+      Text(
+        'Intensity: ${result.intensityDescription}',
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: JuiceTheme.parchmentDark,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    ],
+  );
+}
+
+// =============================================================================
+// EXPECTATION CHECK DISPLAY
+// =============================================================================
+
+Widget buildExpectationCheckDisplay(ExpectationCheckResult result, ThemeData theme) {
+  // Determine if outcome is positive based on outcome type
+  final isPositive = result.outcome == ExpectationOutcome.expected ||
+      result.outcome == ExpectationOutcome.expectedIntensified ||
+      result.outcome == ExpectationOutcome.favorable;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          // Fate dice symbols
+          FateDiceFormatter.buildLabeledFateDiceDisplay(
+            label: '2dF',
+            dice: result.fateDice,
+            theme: theme,
+          ),
+          const SizedBox(width: 12),
+          // Outcome chip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: isPositive
+                  ? JuiceTheme.success.withValues(alpha: 0.2)
+                  : JuiceTheme.danger.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+              ),
+            ),
+            child: Text(
+              result.outcome.displayText,
+              style: TextStyle(
+                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+      // Show auto-rolled meaning for Modified Idea outcome
+      if (result.hasMeaning && result.meaningResult != null) ...[
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: JuiceTheme.mystic.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
+          ),
+          child: Row(
+            children: [
+              Text(
+                result.meaningResult!.adjective,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  color: JuiceTheme.mystic,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                result.meaningResult!.noun,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: JuiceTheme.gold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ],
+  );
+}
+
+// =============================================================================
+// SCALE DISPLAY
+// =============================================================================
+
+Widget buildScaleDisplay(ScaleResult result, ThemeData theme) {
+  // Determine color based on direction
+  final color = result.isIncrease
+      ? JuiceTheme.success
+      : (result.isDecrease ? JuiceTheme.danger : JuiceTheme.parchmentDark);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          // Fate dice symbols
+          FateDiceFormatter.buildLabeledFateDiceDisplay(
+            label: '2dF',
+            dice: result.fateDice,
+            theme: theme,
+          ),
+          const SizedBox(width: 8),
+          // Intensity die
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: JuiceTheme.mystic.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
+            ),
+            child: Text(
+              '1d6: ${result.intensity}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: 'monospace',
+                fontWeight: FontWeight.bold,
+                color: JuiceTheme.mystic,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Scale result chip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color),
+            ),
+            child: Text(
+              result.modifier,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+// =============================================================================
+// NEXT SCENE DISPLAY
+// =============================================================================
+
+Widget buildNextSceneDisplay(NextSceneResult result, ThemeData theme) {
+  Color chipColor;
+  switch (result.sceneType) {
+    case SceneType.normal:
+      chipColor = JuiceTheme.success;
+      break;
+    case SceneType.alterAdd:
+    case SceneType.alterRemove:
+      chipColor = JuiceTheme.gold;
+      break;
+    case SceneType.interruptFavorable:
+      chipColor = JuiceTheme.info;
+      break;
+    case SceneType.interruptUnfavorable:
+      chipColor = JuiceTheme.danger;
+      break;
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          FateDiceFormatter.buildLabeledFateDiceDisplay(
+            label: '2dF',
+            dice: result.fateDice,
+            theme: theme,
+          ),
+          const SizedBox(width: 12),
+          Chip(
+            label: Text(
+              result.sceneType.displayText,
+              style: TextStyle(color: chipColor, fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: chipColor.withValues(alpha: 0.2),
+            side: BorderSide(color: chipColor),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
+      ),
+      if (result.sceneType.requiresFollowUp) ...[
+        const SizedBox(height: 4),
+        Text(
+          '→ Roll ${result.sceneType.followUpRoll}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: JuiceTheme.parchmentDark,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    ],
+  );
+}
+
+// =============================================================================
+// NEXT SCENE WITH FOLLOW-UP DISPLAY
+// =============================================================================
+
+Widget buildNextSceneWithFollowUpDisplay(NextSceneWithFollowUpResult result, ThemeData theme) {
+  final sceneResult = result.sceneResult;
+  Color chipColor;
+  switch (sceneResult.sceneType) {
+    case SceneType.normal:
+      chipColor = JuiceTheme.success;
+      break;
+    case SceneType.alterAdd:
+    case SceneType.alterRemove:
+      chipColor = JuiceTheme.gold;
+      break;
+    case SceneType.interruptFavorable:
+      chipColor = JuiceTheme.info;
+      break;
+    case SceneType.interruptUnfavorable:
+      chipColor = JuiceTheme.danger;
+      break;
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          FateDiceFormatter.buildLabeledFateDiceDisplay(
+            label: '2dF',
+            dice: sceneResult.fateDice,
+            theme: theme,
+          ),
+          const SizedBox(width: 12),
+          Chip(
+            label: Text(
+              sceneResult.sceneType.displayText,
+              style: TextStyle(color: chipColor, fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: chipColor.withValues(alpha: 0.2),
+            side: BorderSide(color: chipColor),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
+      ),
+      if (result.focusResult != null) ...[
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.arrow_forward, size: 16, color: JuiceTheme.parchmentDark),
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: JuiceTheme.ink.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'd10: ${result.focusResult!.roll}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: JuiceTheme.fontFamilyMono,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Focus: ',
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: JuiceTheme.parchmentDark),
+            ),
+            Chip(
+              label: Text(result.focusResult!.focus),
+              backgroundColor: JuiceTheme.categoryExplore.withValues(alpha: 0.2),
+              side: BorderSide(color: JuiceTheme.categoryExplore),
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+            ),
+          ],
+        ),
+      ],
+      if (result.ideaResult != null) ...[
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '2d10: [${result.ideaResult!.modifierRoll}, ${result.ideaResult!.ideaRoll}]',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: 'monospace',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                '${result.ideaResult!.modifier} ${result.ideaResult!.idea}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+      if (result.plotPointResult != null) ...[
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '2d10: [${result.plotPointResult!.categoryRoll}, ${result.plotPointResult!.eventRoll}]',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: 'monospace',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Chip(
+              label: Text(result.plotPointResult!.category),
+              backgroundColor: Colors.purple.withValues(alpha: 0.2),
+              side: const BorderSide(color: Colors.purple),
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                result.plotPointResult!.event,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ],
+  );
+}
+
+// =============================================================================
+// RANDOM EVENT DISPLAY
+// =============================================================================
+
+Widget buildRandomEventDisplay(RandomEventResult result, ThemeData theme) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.amber.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          '3d10: ${result.focusRoll}, ${result.modifierRoll}, ${result.ideaRoll}',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.bold,
+            color: Colors.amber.shade700,
+          ),
+        ),
+      ),
+      const SizedBox(height: 6),
+      Chip(
+        label: Text(result.focus),
+        backgroundColor: Colors.amber.withValues(alpha: 0.2),
+        side: const BorderSide(color: Colors.amber),
+        padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        '${result.modifier} ${result.idea}',
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    ],
+  );
+}
+
+// =============================================================================
+// RANDOM EVENT FOCUS DISPLAY
+// =============================================================================
+
+Widget buildRandomEventFocusDisplay(RandomEventFocusResult result, ThemeData theme) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.amber.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          '1d10: ${result.focusRoll}',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.bold,
+            color: Colors.amber.shade700,
+          ),
+        ),
+      ),
+      const SizedBox(height: 4),
+      Chip(
+        label: Text(result.focus),
+        backgroundColor: Colors.amber.withValues(alpha: 0.2),
+        side: const BorderSide(color: Colors.amber),
+        padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+      ),
+    ],
+  );
+}
+
+// =============================================================================
+// IDEA DISPLAY
+// =============================================================================
+
+Widget buildIdeaDisplay(IdeaResult result, ThemeData theme) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.orange.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          '2d10: ${result.modifierRoll}, ${result.ideaRoll}',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.bold,
+            color: Colors.orange.shade700,
+          ),
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        '${result.modifier} ${result.idea}',
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    ],
+  );
+}
+
+// =============================================================================
+// DISCOVER MEANING DISPLAY
+// =============================================================================
+
+Widget buildDiscoverMeaningDisplay(DiscoverMeaningResult result, ThemeData theme) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: JuiceTheme.juiceOrange.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: JuiceTheme.juiceOrange.withValues(alpha: 0.3)),
+        ),
+        child: Text(
+          '2d20: ${result.adjectiveRoll}, ${result.nounRoll}',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.bold,
+            color: JuiceTheme.juiceOrange,
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: JuiceTheme.mystic.withValues(alpha: 0.12),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                bottomLeft: Radius.circular(8),
+              ),
+              border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
+            ),
+            child: Text(
+              result.adjective,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                color: JuiceTheme.mystic,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: JuiceTheme.gold.withValues(alpha: 0.15),
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(8),
+                bottomRight: Radius.circular(8),
+              ),
+              border: Border(
+                top: BorderSide(color: JuiceTheme.gold.withValues(alpha: 0.5)),
+                bottom: BorderSide(color: JuiceTheme.gold.withValues(alpha: 0.5)),
+                right: BorderSide(color: JuiceTheme.gold.withValues(alpha: 0.5)),
+              ),
+            ),
+            child: Text(
+              result.noun,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: JuiceTheme.gold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
