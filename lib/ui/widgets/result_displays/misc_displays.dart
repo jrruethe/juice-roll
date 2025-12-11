@@ -730,6 +730,7 @@ Widget buildCompanionResponseDisplay(RollResult r, ThemeData theme) {
   final isPositive = result.response.contains('Agree') || result.response.contains('Supportive');
   final color = isPositive ? JuiceTheme.success : JuiceTheme.danger;
   return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -737,7 +738,20 @@ Widget buildCompanionResponseDisplay(RollResult r, ThemeData theme) {
         child: Text('d100: ${result.roll}', style: TextStyle(fontFamily: JuiceTheme.fontFamilyMono, color: color)),
       ),
       const SizedBox(width: 12),
-      Chip(label: Text(result.response), backgroundColor: color.withOpacity(0.15), side: BorderSide(color: color), padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+      Flexible(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color),
+          ),
+          child: Text(
+            result.response,
+            style: TextStyle(fontSize: 13, color: color),
+          ),
+        ),
+      ),
     ],
   );
 }
