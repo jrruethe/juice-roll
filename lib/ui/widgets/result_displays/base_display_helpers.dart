@@ -150,8 +150,8 @@ Widget buildIronswornDieBox(
   bool isChallenge1 = false,
   bool isChallenge2 = false,
 }) {
-  Color bgColor;
-  Color textColor = JuiceTheme.parchment;
+  final Color bgColor;
+  const textColor = JuiceTheme.parchment;
   
   if (isActionDie) {
     bgColor = JuiceTheme.mystic;

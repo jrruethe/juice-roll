@@ -431,11 +431,14 @@ The dialog files are large but reasonably scoped:
 
 **Migration Results:**
 - All 64 specific result types migrated to registry pattern
-- result_display_builder.dart now only handles generic dice rolls and fallback display
+- result_display_builder.dart reduced from 6,946 lines to 320 lines
 - All 234 tests pass
 - No if/else type checking chains remain for specific result types
 
-**See:** `docs/result-display-builder-refactor.md` for detailed migration guide.
+**Architecture:**
+- `result_display_builder.dart` - Registry lookup + generic dice fallback
+- `result_displays/result_displays.dart` - Barrel file with initialization
+- `result_displays/*.dart` - 10 category files with display builders
 
 ---
 
