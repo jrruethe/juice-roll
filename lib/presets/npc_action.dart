@@ -241,6 +241,44 @@ class NpcAction {
     return [subRoll, expanded];
   }
 
+  /// Expand a motive into History or Focus sub-rolls if applicable.
+  /// 
+  /// If motive is "History", rolls on the History table.
+  /// If motive is "Focus", rolls on the Focus table and potentially
+  /// expands further for italic focus entries.
+  /// 
+  /// Returns a record with all expansion fields (null if not applicable).
+  ({
+    DetailResult? historyResult,
+    FocusResult? focusResult,
+    int? focusExpansionRoll,
+    String? focusExpanded,
+  }) _expandMotive(String motive) {
+    if (motive == 'History') {
+      return (
+        historyResult: _details.rollHistory(),
+        focusResult: null,
+        focusExpansionRoll: null,
+        focusExpanded: null,
+      );
+    } else if (motive == 'Focus') {
+      final focusResult = _nextScene.rollFocus();
+      final expansion = _expandFocus(focusResult.focus);
+      return (
+        historyResult: null,
+        focusResult: focusResult,
+        focusExpansionRoll: expansion?[0] as int?,
+        focusExpanded: expansion?[1] as String?,
+      );
+    }
+    return (
+      historyResult: null,
+      focusResult: null,
+      focusExpansionRoll: null,
+      focusExpanded: null,
+    );
+  }
+
   /// Roll for NPC motive/topic with automatic follow-up.
   /// If result is "History", automatically rolls on the History table.
   /// If result is "Focus", automatically rolls on the Focus table,
@@ -251,31 +289,15 @@ class NpcAction {
     final index = _getIndex(roll);
     final motive = motives[index];
 
-    DetailResult? historyResult;
-    FocusResult? focusResult;
-    int? focusExpansionRoll;
-    String? focusExpanded;
-
-    if (motive == 'History') {
-      historyResult = _details.rollHistory();
-    } else if (motive == 'Focus') {
-      focusResult = _nextScene.rollFocus();
-      
-      // Check if the focus result needs further expansion
-      final expansion = _expandFocus(focusResult.focus);
-      if (expansion != null) {
-        focusExpansionRoll = expansion[0] as int;
-        focusExpanded = expansion[1] as String;
-      }
-    }
+    final expansion = _expandMotive(motive);
 
     return MotiveWithFollowUpResult(
       roll: roll,
       motive: motive,
-      historyResult: historyResult,
-      focusResult: focusResult,
-      focusExpansionRoll: focusExpansionRoll,
-      focusExpanded: focusExpanded,
+      historyResult: expansion.historyResult,
+      focusResult: expansion.focusResult,
+      focusExpansionRoll: expansion.focusExpansionRoll,
+      focusExpanded: expansion.focusExpanded,
     );
   }
 
@@ -348,22 +370,7 @@ class NpcAction {
     final motive = motives[_getIndex(motiveRoll)];
     
     // Handle motive expansion for History and Focus
-    DetailResult? historyResult;
-    FocusResult? focusResult;
-    int? focusExpansionRoll;
-    String? focusExpanded;
-    
-    if (motive == 'History') {
-      historyResult = _details.rollHistory();
-    } else if (motive == 'Focus') {
-      focusResult = _nextScene.rollFocus();
-      // Check if the focus result needs further expansion
-      final expansion = _expandFocus(focusResult.focus);
-      if (expansion != null) {
-        focusExpansionRoll = expansion[0] as int;
-        focusExpanded = expansion[1] as String;
-      }
-    }
+    final motiveExpansion = _expandMotive(motive);
     
     // Color (1d10)
     final colorResult = _details.rollColor();
@@ -383,10 +390,10 @@ class NpcAction {
       motive: motive,
       needSkew: needSkew,
       needAllRolls: needAllRolls,
-      historyResult: historyResult,
-      focusResult: focusResult,
-      focusExpansionRoll: focusExpansionRoll,
-      focusExpanded: focusExpanded,
+      historyResult: motiveExpansion.historyResult,
+      focusResult: motiveExpansion.focusResult,
+      focusExpansionRoll: motiveExpansion.focusExpansionRoll,
+      focusExpanded: motiveExpansion.focusExpanded,
       color: colorResult,
       property1: property1,
       property2: property2,
@@ -417,22 +424,7 @@ class NpcAction {
     final motive = motives[_getIndex(motiveRoll)];
     
     // Handle motive expansion for History and Focus
-    DetailResult? historyResult;
-    FocusResult? focusResult;
-    int? focusExpansionRoll;
-    String? focusExpanded;
-    
-    if (motive == 'History') {
-      historyResult = _details.rollHistory();
-    } else if (motive == 'Focus') {
-      focusResult = _nextScene.rollFocus();
-      // Check if the focus result needs further expansion
-      final expansion = _expandFocus(focusResult.focus);
-      if (expansion != null) {
-        focusExpansionRoll = expansion[0] as int;
-        focusExpanded = expansion[1] as String;
-      }
-    }
+    final motiveExpansion = _expandMotive(motive);
 
     return SimpleNpcProfileResult(
       personalityRoll: persRoll,
@@ -443,10 +435,10 @@ class NpcAction {
       motive: motive,
       needSkew: needSkew,
       needAllRolls: needAllRolls,
-      historyResult: historyResult,
-      focusResult: focusResult,
-      focusExpansionRoll: focusExpansionRoll,
-      focusExpanded: focusExpanded,
+      historyResult: motiveExpansion.historyResult,
+      focusResult: motiveExpansion.focusResult,
+      focusExpansionRoll: motiveExpansion.focusExpansionRoll,
+      focusExpanded: motiveExpansion.focusExpanded,
     );
   }
 
@@ -519,22 +511,7 @@ class NpcAction {
     final motive = motives[_getIndex(motiveRoll)];
     
     // Handle motive expansion for History and Focus
-    DetailResult? historyResult;
-    FocusResult? focusResult;
-    int? focusExpansionRoll;
-    String? focusExpanded;
-    
-    if (motive == 'History') {
-      historyResult = _details.rollHistory();
-    } else if (motive == 'Focus') {
-      focusResult = _nextScene.rollFocus();
-      // Check if the focus result needs further expansion
-      final expansion = _expandFocus(focusResult.focus);
-      if (expansion != null) {
-        focusExpansionRoll = expansion[0] as int;
-        focusExpanded = expansion[1] as String;
-      }
-    }
+    final motiveExpansion = _expandMotive(motive);
     
     // Color (1d10)
     final colorResult = details.rollColor();
@@ -555,10 +532,10 @@ class NpcAction {
       needAllRolls: needAllRolls,
       motiveRoll: motiveRoll,
       motive: motive,
-      historyResult: historyResult,
-      focusResult: focusResult,
-      focusExpansionRoll: focusExpansionRoll,
-      focusExpanded: focusExpanded,
+      historyResult: motiveExpansion.historyResult,
+      focusResult: motiveExpansion.focusResult,
+      focusExpansionRoll: motiveExpansion.focusExpansionRoll,
+      focusExpanded: motiveExpansion.focusExpanded,
       color: colorResult,
       property1: property1,
       property2: property2,
