@@ -127,6 +127,34 @@ class RollEngine {
       return rolls.reduce((a, b) => a < b ? a : b);
     }
   }
+
+  /// Roll with skew based on a tri-state enum (none/advantage/disadvantage).
+  /// 
+  /// This is a convenience method that accepts any enum with values that
+  /// represent none, advantage (complex/offensive/etc), or disadvantage 
+  /// (primitive/defensive/etc).
+  /// 
+  /// Returns a record with the chosen roll and all rolls made.
+  /// For advantage/disadvantage, allRolls contains both attempts.
+  /// For none, allRolls contains just the single roll.
+  ({int roll, List<int> allRolls}) rollWithSkewEnum<T extends Enum>(
+    int dieSize,
+    T skew, {
+    required T noneValue,
+    required T advantageValue,
+  }) {
+    if (skew == advantageValue) {
+      final result = rollWithAdvantage(1, dieSize);
+      return (roll: result.chosenSum, allRolls: [result.sum1, result.sum2]);
+    } else if (skew == noneValue) {
+      final roll = rollDie(dieSize);
+      return (roll: roll, allRolls: [roll]);
+    } else {
+      // Anything else is disadvantage
+      final result = rollWithDisadvantage(1, dieSize);
+      return (roll: result.chosenSum, allRolls: [result.sum1, result.sum2]);
+    }
+  }
 }
 
 /// Result of a roll with advantage or disadvantage.

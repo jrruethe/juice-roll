@@ -160,24 +160,12 @@ class NpcAction {
   /// Disadvantage = more primitive needs (sustenance, shelter)
   /// Advantage = more complex needs (status, recognition, fulfillment)
   NpcActionResult rollNeed({NeedSkew skew = NeedSkew.none}) {
-    int roll;
-    List<int> allRolls = [];
-    
-    switch (skew) {
-      case NeedSkew.primitive:
-        final result = _rollEngine.rollWithDisadvantage(1, 10);
-        roll = result.chosenSum;
-        allRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.complex:
-        final result = _rollEngine.rollWithAdvantage(1, 10);
-        roll = result.chosenSum;
-        allRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.none:
-        roll = _rollEngine.rollDie(10);
-        allRolls = [roll];
-    }
+    final (:roll, :allRolls) = _rollEngine.rollWithSkewEnum(
+      10,
+      skew,
+      noneValue: NeedSkew.none,
+      advantageValue: NeedSkew.complex,
+    );
     
     final index = _getIndex(roll);
     final need = needs[index];
@@ -347,23 +335,12 @@ class NpcAction {
     final secondaryPersonality = personalities[_getIndex(persRoll2)];
     
     // Handle need with skew
-    int needRoll;
-    List<int> needAllRolls = [];
-    switch (needSkew) {
-      case NeedSkew.primitive:
-        final result = _rollEngine.rollWithDisadvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.complex:
-        final result = _rollEngine.rollWithAdvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.none:
-        needRoll = _rollEngine.rollDie(10);
-        needAllRolls = [needRoll];
-    }
+    final (roll: needRoll, allRolls: needAllRolls) = _rollEngine.rollWithSkewEnum(
+      10,
+      needSkew,
+      noneValue: NeedSkew.none,
+      advantageValue: NeedSkew.complex,
+    );
     
     final motiveRoll = _rollEngine.rollDie(10);
 
@@ -426,23 +403,12 @@ class NpcAction {
     final persRoll = _rollEngine.rollDie(10);
     
     // Handle need with skew
-    int needRoll;
-    List<int> needAllRolls = [];
-    switch (needSkew) {
-      case NeedSkew.primitive:
-        final result = _rollEngine.rollWithDisadvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.complex:
-        final result = _rollEngine.rollWithAdvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.none:
-        needRoll = _rollEngine.rollDie(10);
-        needAllRolls = [needRoll];
-    }
+    final (roll: needRoll, allRolls: needAllRolls) = _rollEngine.rollWithSkewEnum(
+      10,
+      needSkew,
+      noneValue: NeedSkew.none,
+      advantageValue: NeedSkew.complex,
+    );
     
     final motiveRoll = _rollEngine.rollDie(10);
 
@@ -540,23 +506,12 @@ class NpcAction {
     }
     
     // Need with skew
-    int needRoll;
-    List<int> needAllRolls = [];
-    switch (needSkew) {
-      case NeedSkew.primitive:
-        final result = _rollEngine.rollWithDisadvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.complex:
-        final result = _rollEngine.rollWithAdvantage(1, 10);
-        needRoll = result.chosenSum;
-        needAllRolls = [result.sum1, result.sum2];
-        break;
-      case NeedSkew.none:
-        needRoll = _rollEngine.rollDie(10);
-        needAllRolls = [needRoll];
-    }
+    final (roll: needRoll, allRolls: needAllRolls) = _rollEngine.rollWithSkewEnum(
+      10,
+      needSkew,
+      noneValue: NeedSkew.none,
+      advantageValue: NeedSkew.complex,
+    );
     final need = needs[_getIndex(needRoll)];
     
     // Motive with expansion for History/Focus
