@@ -20,6 +20,7 @@ import '../result_display_registry.dart';
 /// - RandomEventResult - Full random event (focus + modifier + idea)
 /// - RandomEventFocusResult - Just the focus
 /// - IdeaResult - Modifier + Idea pair
+/// - SingleTableResult - Individual table rolls (Modifier, Idea, Event, Person, Object)
 /// - DiscoverMeaningResult - Adjective + Noun pair
 
 /// Registers all Oracle display builders with the registry.
@@ -32,6 +33,7 @@ void registerOracleDisplays() {
   ResultDisplayRegistry.register<RandomEventResult>(buildRandomEventDisplay);
   ResultDisplayRegistry.register<RandomEventFocusResult>(buildRandomEventFocusDisplay);
   ResultDisplayRegistry.register<IdeaResult>(buildIdeaDisplay);
+  ResultDisplayRegistry.register<SingleTableResult>(buildSingleTableDisplay);
   ResultDisplayRegistry.register<DiscoverMeaningResult>(buildDiscoverMeaningDisplay);
 }
 
@@ -655,6 +657,85 @@ Widget buildIdeaDisplay(IdeaResult result, ThemeData theme) {
       ),
     ],
   );
+}
+
+// =============================================================================
+// SINGLE TABLE DISPLAY
+// =============================================================================
+
+/// Display for individual table rolls (Modifier, Idea, Event, Person, Object).
+/// These are the building blocks of Random Events and Meaning tables.
+Widget buildSingleTableDisplay(SingleTableResult result, ThemeData theme) {
+  // Get appropriate icon and color based on table name
+  final (IconData icon, Color color) = _getTableStyle(result.tableName);
+  
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      // Icon for the table type
+      Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: color,
+        ),
+      ),
+      const SizedBox(width: 10),
+      // Roll display
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          '1d10: ${result.roll}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontFamily: JuiceTheme.fontFamilyMono,
+            fontWeight: FontWeight.bold,
+            color: color.withValues(alpha: 0.8),
+          ),
+        ),
+      ),
+      const SizedBox(width: 10),
+      // Result word - prominent display
+      Expanded(
+        child: Text(
+          result.result,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+            color: color,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+/// Get icon and color for each table type.
+(IconData, Color) _getTableStyle(String tableName) {
+  switch (tableName.toLowerCase()) {
+    case 'modifier':
+      return (Icons.change_circle_outlined, JuiceTheme.juiceOrange);
+    case 'idea':
+      return (Icons.lightbulb_outline, JuiceTheme.gold);
+    case 'event':
+      return (Icons.flash_on, JuiceTheme.rust);
+    case 'person':
+      return (Icons.person_outline, JuiceTheme.mystic);
+    case 'object':
+      return (Icons.category_outlined, JuiceTheme.success);
+    default:
+      return (Icons.casino, JuiceTheme.parchmentDark);
+  }
 }
 
 // =============================================================================

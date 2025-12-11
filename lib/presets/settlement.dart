@@ -463,10 +463,23 @@ class MultiEstablishmentResult extends RollResult {
   @override
   String get className => 'MultiEstablishmentResult';
 
-  // ignore: avoid_unused_constructor_parameters - factory signature requires json
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'countResult': countResult.toJson(),
+    'establishments': establishments.map((e) => e.toJson()).toList(),
+  };
+
   factory MultiEstablishmentResult.fromJson(Map<String, dynamic> json) {
-    // Cannot fully reconstruct nested objects from JSON metadata
-    throw UnimplementedError('MultiEstablishmentResult.fromJson requires full nested data');
+    return MultiEstablishmentResult(
+      countResult: EstablishmentCountResult.fromJson(
+        json['countResult'] as Map<String, dynamic>,
+      ),
+      establishments: (json['establishments'] as List)
+          .map((e) => SettlementDetailResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
   }
 
   @override
@@ -506,10 +519,27 @@ class FullSettlementResult extends RollResult {
   @override
   String get className => 'FullSettlementResult';
 
-  // ignore: avoid_unused_constructor_parameters - factory signature requires json
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'name': name.toJson(),
+    'establishment': establishment.toJson(),
+    'news': news.toJson(),
+  };
+
   factory FullSettlementResult.fromJson(Map<String, dynamic> json) {
-    // Cannot fully reconstruct nested objects from JSON metadata
-    throw UnimplementedError('FullSettlementResult.fromJson requires full nested data');
+    return FullSettlementResult(
+      name: SettlementNameResult.fromJson(
+        json['name'] as Map<String, dynamic>,
+      ),
+      establishment: SettlementDetailResult.fromJson(
+        json['establishment'] as Map<String, dynamic>,
+      ),
+      news: SettlementDetailResult.fromJson(
+        json['news'] as Map<String, dynamic>,
+      ),
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
   }
 
   @override
@@ -552,10 +582,32 @@ class CompleteSettlementResult extends RollResult {
   @override
   String get className => 'CompleteSettlementResult';
 
-  // ignore: avoid_unused_constructor_parameters - factory signature requires json
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'settlementType': settlementType.name,
+    'name': name.toJson(),
+    'establishments': establishments.toJson(),
+    'news': news.toJson(),
+  };
+
   factory CompleteSettlementResult.fromJson(Map<String, dynamic> json) {
-    // Cannot fully reconstruct nested objects from JSON metadata
-    throw UnimplementedError('CompleteSettlementResult.fromJson requires full nested data');
+    return CompleteSettlementResult(
+      settlementType: SettlementType.values.firstWhere(
+        (t) => t.name == json['settlementType'],
+        orElse: () => SettlementType.village,
+      ),
+      name: SettlementNameResult.fromJson(
+        json['name'] as Map<String, dynamic>,
+      ),
+      establishments: MultiEstablishmentResult.fromJson(
+        json['establishments'] as Map<String, dynamic>,
+      ),
+      news: SettlementDetailResult.fromJson(
+        json['news'] as Map<String, dynamic>,
+      ),
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
   }
 
   static String _formatInterpretation(
