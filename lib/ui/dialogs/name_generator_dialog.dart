@@ -3,6 +3,7 @@ import '../../models/roll_result.dart';
 import '../../presets/name_generator.dart';
 import '../theme/juice_theme.dart';
 import '../shared/oracle_dialog.dart';
+import '../shared/dialog_components.dart';
 
 /// Dialog for Name Generator options.
 class NameGeneratorDialog extends StatelessWidget {
@@ -24,10 +25,11 @@ class NameGeneratorDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Simple Method section
-          const _NameSectionHeader(
+          const SectionHeader(
             icon: Icons.casino,
             title: 'Simple Method',
             subtitle: 'Quick random names using 3d20',
+            fontSize: 13,
           ),
           const SizedBox(height: 6),
           _NameDialogOption(
@@ -54,10 +56,11 @@ class NameGeneratorDialog extends StatelessWidget {
           const SizedBox(height: 12),
           
           // Pattern Method section
-          const _NameSectionHeader(
+          const SectionHeader(
             icon: Icons.pattern,
             title: 'Pattern Method',
             subtitle: 'Use pattern column for structured names',
+            fontSize: 13,
           ),
           const SizedBox(height: 6),
           _NameDialogOption(
@@ -121,49 +124,6 @@ class NameGeneratorDialog extends StatelessWidget {
 // =============================================================================
 // HELPER WIDGETS (Private to this file)
 // =============================================================================
-
-/// Section header for Name Generator dialog.
-class _NameSectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _NameSectionHeader({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: JuiceTheme.gold),
-        const SizedBox(width: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                color: JuiceTheme.parchment,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 9,
-                color: JuiceTheme.parchmentDark,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
 
 /// Dialog option for Name Generator.
 class _NameDialogOption extends StatelessWidget {

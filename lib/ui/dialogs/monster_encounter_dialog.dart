@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/juice_theme.dart';
 import '../shared/oracle_dialog.dart';
+import '../shared/dialog_components.dart';
 import '../../presets/wilderness.dart';
 import '../../presets/monster_encounter.dart';
 import '../../models/roll_result.dart';
@@ -192,7 +193,7 @@ class _MonsterEncounterDialogState extends State<MonsterEncounterDialog> {
               const SizedBox(height: 12),
               
               // Quick Rolls section
-              _MonsterSectionHeader(icon: Icons.flash_on, title: 'Quick Rolls'),
+              SectionHeader(icon: Icons.flash_on, title: 'Quick Rolls', color: JuiceTheme.categoryCombat, iconSize: 14, showDivider: true),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.all(6),
@@ -251,7 +252,7 @@ class _MonsterEncounterDialogState extends State<MonsterEncounterDialog> {
               const SizedBox(height: 12),
               
               // By Difficulty section
-              _MonsterSectionHeader(icon: Icons.trending_up, title: 'By Difficulty'),
+              SectionHeader(icon: Icons.trending_up, title: 'By Difficulty', color: JuiceTheme.categoryCombat, iconSize: 14, showDivider: true),
               const SizedBox(height: 6),
               // 2x2 grid for difficulties
               Row(
@@ -314,7 +315,7 @@ class _MonsterEncounterDialogState extends State<MonsterEncounterDialog> {
               const SizedBox(height: 12),
               
               // Special Rows section
-              _MonsterSectionHeader(icon: Icons.star_border, title: 'Special Rows'),
+              SectionHeader(icon: Icons.star_border, title: 'Special Rows', color: JuiceTheme.categoryCombat, iconSize: 14, showDivider: true),
               const SizedBox(height: 6),
               Row(
                 children: [
@@ -349,40 +350,6 @@ class _MonsterEncounterDialogState extends State<MonsterEncounterDialog> {
             ],
           ),
         );
-  }
-}
-
-/// Section header for Monster Encounter dialog
-class _MonsterSectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  
-  const _MonsterSectionHeader({required this.icon, required this.title});
-  
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: JuiceTheme.categoryCombat),
-        const SizedBox(width: 6),
-        Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-            color: JuiceTheme.categoryCombat,
-            letterSpacing: 0.3,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: JuiceTheme.categoryCombat.withOpacity(0.2),
-          ),
-        ),
-      ],
-    );
   }
 }
 

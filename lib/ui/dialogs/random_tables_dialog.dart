@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/juice_theme.dart';
 import '../shared/oracle_dialog.dart';
+import '../shared/dialog_components.dart';
 import '../../presets/random_event.dart';
 import '../../models/roll_result.dart';
 
@@ -35,9 +36,10 @@ class RandomTablesDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Simple Mode / Alter Scene - primary action
-          _RandomSectionHeader(
+          SectionHeader(
             icon: Icons.tune,
             title: 'Simple Mode / Alter Scene',
+            iconSize: 14,
           ),
           const SizedBox(height: 4),
           _RandomPrimaryOption(
@@ -52,9 +54,10 @@ class RandomTablesDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Individual Tables section
-          _RandomSectionHeader(
+          SectionHeader(
             icon: Icons.view_list,
             title: 'Individual Tables (d10)',
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
           _RandomIndividualTable(
@@ -109,9 +112,10 @@ class RandomTablesDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Modifier + Category section (combined options)
-          _RandomSectionHeader(
+          SectionHeader(
             icon: Icons.merge_type,
             title: 'Modifier + Category',
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
           // 2x2 grid for modifier combinations
@@ -173,9 +177,10 @@ class RandomTablesDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Random Event Focus section
-          _RandomSectionHeader(
+          SectionHeader(
             icon: Icons.shuffle,
             title: 'Random Event Focus',
+            iconSize: 14,
           ),
           const SizedBox(height: 4),
           Text(
@@ -269,35 +274,6 @@ class RandomTablesDialog extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Section header for Random Tables dialog.
-class _RandomSectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _RandomSectionHeader({
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: JuiceTheme.gold),
-        const SizedBox(width: 6),
-        Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-            color: JuiceTheme.gold,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -118,28 +118,80 @@ class _ScrollableDialogContentState extends State<ScrollableDialogContent> {
 }
 
 /// Helper widget for section headers with icons.
+/// 
+/// Supports various styles used across dialogs:
+/// - Basic: icon + title
+/// - With subtitle: icon + title + smaller subtitle below
+/// - With divider: icon + title + trailing horizontal line
 class SectionHeader extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color? color;
+  final String? subtitle;
+  final bool showDivider;
+  final double iconSize;
+  final double fontSize;
 
   const SectionHeader({
     super.key,
     required this.title,
     required this.icon,
     this.color,
+    this.subtitle,
+    this.showDivider = false,
+    this.iconSize = 16,
+    this.fontSize = 12,
   });
 
   @override
   Widget build(BuildContext context) {
     final c = color ?? JuiceTheme.gold;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: c),
+          Icon(icon, size: iconSize, color: c),
           const SizedBox(width: 6),
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: c)),
+          if (subtitle != null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSize,
+                    color: c,
+                  ),
+                ),
+                Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: JuiceTheme.parchmentDark,
+                  ),
+                ),
+              ],
+            )
+          else
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: fontSize,
+                color: c,
+              ),
+            ),
+          if (showDivider) ...[
+            const SizedBox(width: 8),
+            Expanded(
+              child: Container(
+                height: 1,
+                color: c.withOpacity(0.2),
+              ),
+            ),
+          ],
         ],
       ),
     );

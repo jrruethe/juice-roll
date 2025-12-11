@@ -3,6 +3,7 @@ import '../../models/roll_result.dart';
 import '../../presets/challenge.dart';
 import '../theme/juice_theme.dart';
 import '../shared/oracle_dialog.dart';
+import '../shared/dialog_components.dart';
 
 /// Dialog for Challenge options.
 class ChallengeDialog extends StatelessWidget {
@@ -67,9 +68,11 @@ class ChallengeDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Full Challenge section - primary action
-          _ChallengeSectionHeader(
+          SectionHeader(
             icon: Icons.fitness_center,
             title: 'Full Challenge',
+            color: JuiceTheme.categoryCombat,
+            iconSize: 14,
           ),
           const SizedBox(height: 4),
           Text(
@@ -124,9 +127,11 @@ class ChallengeDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // DC Methods section
-          _ChallengeSectionHeader(
+          SectionHeader(
             icon: Icons.gavel,
             title: 'DC Methods',
+            color: JuiceTheme.categoryCombat,
+            iconSize: 14,
           ),
           const SizedBox(height: 4),
           Text(
@@ -214,9 +219,11 @@ class ChallengeDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Individual Skills section
-          _ChallengeSectionHeader(
+          SectionHeader(
             icon: Icons.sports_martial_arts,
             title: 'Individual Skills',
+            color: JuiceTheme.categoryCombat,
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
           Row(
@@ -249,9 +256,11 @@ class ChallengeDialog extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Examples section (compact)
-          _ChallengeSectionHeader(
+          SectionHeader(
             icon: Icons.lightbulb_outline,
             title: 'Examples',
+            color: JuiceTheme.categoryCombat,
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
           Container(
@@ -296,35 +305,6 @@ class ChallengeDialog extends StatelessWidget {
 // =============================================================================
 // HELPER WIDGETS (Private to this file)
 // =============================================================================
-
-class _ChallengeSectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _ChallengeSectionHeader({
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: JuiceTheme.categoryCombat),
-        const SizedBox(width: 6),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: JuiceTheme.parchment,
-            fontFamily: JuiceTheme.fontFamilySerif,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _ChallengeDifficultyChip extends StatelessWidget {
   final String label;

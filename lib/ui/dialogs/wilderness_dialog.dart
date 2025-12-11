@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/juice_theme.dart';
 import '../shared/oracle_dialog.dart';
+import '../shared/dialog_components.dart';
 import '../../presets/wilderness.dart';
 import '../../presets/dungeon_generator.dart';
 import '../../presets/challenge.dart';
@@ -108,9 +109,11 @@ class _WildernessDialogState extends State<WildernessDialog> {
           ],
 
           // ========== Environment Section ==========
-          _WildernessSectionHeader(
+          SectionHeader(
             icon: Icons.terrain,
             title: 'Environment',
+            color: JuiceTheme.categoryExplore,
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
           
@@ -177,9 +180,11 @@ class _WildernessDialogState extends State<WildernessDialog> {
           const SizedBox(height: 14),
 
           // ========== Encounters Section ==========
-          _WildernessSectionHeader(
+          SectionHeader(
             icon: Icons.explore,
             title: 'Encounters',
+            color: JuiceTheme.categoryExplore,
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
 
@@ -313,9 +318,11 @@ class _WildernessDialogState extends State<WildernessDialog> {
           const SizedBox(height: 14),
 
           // ========== Monster Level Section ==========
-          _WildernessSectionHeader(
+          SectionHeader(
             icon: Icons.pets,
             title: 'Monster Level',
+            color: JuiceTheme.categoryExplore,
+            iconSize: 14,
           ),
           const SizedBox(height: 6),
 
@@ -459,32 +466,6 @@ class _WildernessDialogState extends State<WildernessDialog> {
 }
 
 // ========== Wilderness Dialog Helper Widgets ==========
-
-class _WildernessSectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _WildernessSectionHeader({required this.icon, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: JuiceTheme.categoryExplore),
-        const SizedBox(width: 6),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: JuiceTheme.parchment,
-            fontFamily: JuiceTheme.fontFamilySerif,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _WildernessStateCard extends StatelessWidget {
   final WildernessState state;

@@ -215,29 +215,6 @@ class _DungeonDialogState extends State<DungeonDialog> {
     );
   }
 
-  // Build a section header with icon
-  Widget _buildDungeonSectionHeader(String title, IconData icon, {Color? color}) {
-    final c = color ?? _dungeonColor;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6, top: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: c),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              fontFamily: JuiceTheme.fontFamilySerif,
-              color: c,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // Build an info/tip box
   Widget _buildInfoBox(String content, {Color? color, bool isCompact = false}) {
     final c = color ?? _dungeonColor;
@@ -488,7 +465,7 @@ class _DungeonDialogState extends State<DungeonDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Dungeon Name Section
-                        _buildDungeonSectionHeader('Dungeon Name', Icons.castle),
+                        SectionHeader(title: 'Dungeon Name', icon: Icons.castle, color: _dungeonColor, fontSize: 13),
                         DialogOption(
                           title: 'Generate Name (3d10)',
                           subtitle: '[Dungeon] of the [Description] [Subject]',
@@ -500,7 +477,7 @@ class _DungeonDialogState extends State<DungeonDialog> {
                         const Divider(),
                         
                         // ============ UNIFIED MAP GENERATION SECTION ============
-                        _buildDungeonSectionHeader('Map Generation', Icons.map),
+                        SectionHeader(title: 'Map Generation', icon: Icons.map, color: _dungeonColor, fontSize: 13),
                         const SizedBox(height: 8),
                         
                         // Mode Toggle: One-Pass vs Two-Pass
@@ -724,7 +701,7 @@ class _DungeonDialogState extends State<DungeonDialog> {
                         
                         const Divider(),
                         // Encounter Settings
-                        _buildDungeonSectionHeader('Dungeon Encounter', Icons.warning_amber_rounded, color: _encounterColor),
+                        SectionHeader(title: 'Dungeon Encounter', icon: Icons.warning_amber_rounded, color: _encounterColor, fontSize: 13),
                         Container(
                           padding: const EdgeInsets.all(10),
                           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -792,7 +769,7 @@ class _DungeonDialogState extends State<DungeonDialog> {
                           },
                         ),
                         const Divider(),
-                        _buildDungeonSectionHeader('Encounter Details', Icons.pest_control, color: _trapColor),
+                        SectionHeader(title: 'Encounter Details', icon: Icons.pest_control, color: _trapColor, fontSize: 13),
                         DialogOption(
                           title: 'Monster (2d10)',
                           subtitle: 'Descriptor + Ability',
