@@ -1,5 +1,6 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
+import '../data/quest_data.dart' as data;
 import 'details.dart';
 import 'dungeon_generator.dart';
 import 'random_event.dart';
@@ -33,89 +34,31 @@ class Quest {
   final DungeonGenerator _dungeon;
   final Settlement _settlement;
 
+  // ========== Static Accessors (delegate to data file) ==========
+
   /// Objectives - d10
-  static const List<String> objectives = [
-    'Attain',     // 1
-    'Create',     // 2
-    'Deliver',    // 3
-    'Destroy',    // 4
-    'Fetch',      // 5
-    'Infiltrate', // 6
-    'Investigate',// 7
-    'Negotiate',  // 8
-    'Protect',    // 9
-    'Survive',    // 0/10
-  ];
+  static List<String> get objectives => data.objectives;
 
   /// Descriptions - d10 (row 3 Colorful is italicized - references Color table)
-  static const List<String> descriptions = [
-    'Abandoned',  // 1
-    'Cold',       // 2
-    'Colorful',   // 3 (italic - roll Color table)
-    'Connected',  // 4
-    'Dark',       // 5
-    'Friendly',   // 6
-    'Hidden',     // 7
-    'Mystical',   // 8
-    'Remote',     // 9
-    'Wounded',    // 0/10
-  ];
+  static List<String> get descriptions => data.descriptions;
 
   /// Focus - d10 (italicized entries reference other tables)
-  static const List<String> focuses = [
-    'Enemy',       // 1
-    'Monster',     // 2 (italic - roll Monster Descriptors)
-    'Event',       // 3 (italic - roll Event)
-    'Environment', // 4 (italic - roll Environment)
-    'Community',   // 5
-    'Person',      // 6 (italic - roll Person)
-    'Information', // 7
-    'Location',    // 8 (italic - roll Settlement Name)
-    'Object',      // 9 (italic - roll Object)
-    'Ally',        // 0/10
-  ];
+  static List<String> get focuses => data.focuses;
 
   /// Prepositions - d10
-  static const List<String> prepositions = [
-    'Around',      // 1
-    'Behind',      // 2
-    'In Front Of', // 3
-    'Near',        // 4
-    'On Top Of',   // 5
-    'At',          // 6
-    'From',        // 7
-    'Inside Of',   // 8
-    'Outside Of',  // 9
-    'Under',       // 0/10
-  ];
+  static List<String> get prepositions => data.prepositions;
 
   /// Locations - d10 (italicized entries reference other tables)
-  static const List<String> locations = [
-    'Community',         // 1
-    'Dungeon Feature',   // 2 (italic - roll Dungeon Feature)
-    'Dungeon',           // 3 (italic - roll Dungeon Name)
-    'Environment',       // 4 (italic - roll Environment)
-    'Event',             // 5 (italic - roll Event)
-    'Natural Hazard',    // 6 (italic - roll Natural Hazard)
-    'Outpost',           // 7
-    'Settlement',        // 8 (italic - roll Settlement Name)
-    'Transportation',    // 9
-    'Wilderness Feature',// 0/10 (italic - roll Wilderness Feature)
-  ];
+  static List<String> get locations => data.locations;
 
   /// Description entries that require sub-rolls (italic in the original table)
-  static const Set<String> _italicDescriptions = {'Colorful'};
+  static Set<String> get _italicDescriptions => data.italicDescriptions;
 
   /// Focus entries that require sub-rolls (italic in the original table)
-  static const Set<String> _italicFocuses = {
-    'Monster', 'Event', 'Environment', 'Person', 'Location', 'Object'
-  };
+  static Set<String> get _italicFocuses => data.italicFocuses;
 
   /// Location entries that require sub-rolls (italic in the original table)
-  static const Set<String> _italicLocations = {
-    'Dungeon Feature', 'Dungeon', 'Environment', 'Event', 
-    'Natural Hazard', 'Settlement', 'Wilderness Feature'
-  };
+  static Set<String> get _italicLocations => data.italicLocations;
 
   Quest([RollEngine? rollEngine])
       : _rollEngine = rollEngine ?? RollEngine(),

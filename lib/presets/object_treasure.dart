@@ -1,4 +1,5 @@
 import '../core/roll_engine.dart';
+import '../data/object_treasure_data.dart' as data;
 import '../models/roll_result.dart';
 import '../models/results/json_utils.dart';
 import 'details.dart' show Details, SkewType, PropertyResult, DetailResult;
@@ -9,182 +10,37 @@ class ObjectTreasure {
   final RollEngine _rollEngine;
 
   // === TRINKET (1) ===
-  static const List<String> trinketQualities = [
-    'Broken',      // 1
-    'Damaged',     // 2
-    'Worn',        // 3
-    'Simple',      // 4
-    'Exceptional', // 5
-    'Magic',       // 6
-  ];
-
-  static const List<String> trinketMaterials = [
-    'Wood',    // 1
-    'Bone',    // 2
-    'Leather', // 3
-    'Silver',  // 4
-    'Gold',    // 5
-    'Gem',     // 6
-  ];
-
-  static const List<String> trinketTypes = [
-    'Toy/Game',   // 1
-    'Bottle',     // 2
-    'Instrument', // 3
-    'Charm',      // 4
-    'Tool',       // 5
-    'Key',        // 6
-  ];
+  static List<String> get trinketQualities => data.trinketQualities;
+  static List<String> get trinketMaterials => data.trinketMaterials;
+  static List<String> get trinketTypes => data.trinketTypes;
 
   // === TREASURE (2) ===
-  static const List<String> treasureQualities = [
-    'Dusty',  // 1
-    'Worn',   // 2
-    'Sturdy', // 3
-    'Fine',   // 4
-    'New',    // 5
-    'Ornate', // 6
-  ];
-
-  static const List<String> treasureContainers = [
-    'None',    // 1
-    'Pouch',   // 2
-    'Box',     // 3
-    'Satchel', // 4
-    'Crate',   // 5
-    'Chest',   // 6
-  ];
-
-  static const List<String> treasureContents = [
-    'Food',         // 1
-    'Art',          // 2
-    'Deed',         // 3
-    'Silver Coins', // 4
-    'Gold Coins',   // 5
-    'Gems',         // 6
-  ];
+  static List<String> get treasureQualities => data.treasureQualities;
+  static List<String> get treasureContainers => data.treasureContainers;
+  static List<String> get treasureContents => data.treasureContents;
 
   // === DOCUMENT (3) ===
-  static const List<String> documentTypes = [
-    'Song',        // 1
-    'Picture',     // 2
-    'Letter/Note', // 3
-    'Scroll',      // 4
-    'Journal',     // 5
-    'Book',        // 6
-  ];
-
-  static const List<String> documentContents = [
-    'Lewd',      // 1
-    'Common',    // 2
-    'Map',       // 3
-    'Prophecy',  // 4
-    'Arcane',    // 5
-    'Forbidden', // 6
-  ];
-
-  static const List<String> documentSubjects = [
-    'Religion',  // 1
-    'Art',       // 2
-    'Science',   // 3
-    'Creatures', // 4
-    'History',   // 5
-    'Magic',     // 6
-  ];
+  static List<String> get documentTypes => data.documentTypes;
+  static List<String> get documentContents => data.documentContents;
+  static List<String> get documentSubjects => data.documentSubjects;
 
   // === ACCESSORY (4) ===
-  static const List<String> accessoryQualities = [
-    'Ruined',  // 1
-    'Crude',   // 2
-    'Simple',  // 3
-    'Fine',    // 4
-    'Crafted', // 5
-    'Magic',   // 6
-  ];
-
-  static const List<String> accessoryMaterials = [
-    'Wood',    // 1
-    'Bone',    // 2
-    'Leather', // 3
-    'Silver',  // 4
-    'Gold',    // 5
-    'Gem',     // 6
-  ];
-
-  static const List<String> accessoryTypes = [
-    'Headpiece', // 1
-    'Emblem',    // 2
-    'Earring',   // 3
-    'Bracelet',  // 4
-    'Necklace',  // 5
-    'Ring',      // 6
-  ];
+  static List<String> get accessoryQualities => data.accessoryQualities;
+  static List<String> get accessoryMaterials => data.accessoryMaterials;
+  static List<String> get accessoryTypes => data.accessoryTypes;
 
   // === WEAPON (5) ===
-  static const List<String> weaponQualities = [
-    'Broken',     // 1
-    'Improvised', // 2
-    'Rough',      // 3
-    'Simple',     // 4
-    'Martial',    // 5
-    'Masterwork', // 6
-  ];
-
-  static const List<String> weaponMaterials = [
-    'Wood',       // 1
-    'Bone',       // 2
-    'Steel',      // 3
-    'Silver',     // 4
-    'Mithral',    // 5
-    'Adamantine', // 6
-  ];
-
-  static const List<String> weaponTypes = [
-    'Axe/Hammer',     // 1
-    'Halberd/Spear',  // 2
-    'Sword/Dagger',   // 3
-    'Staff/Wand',     // 4
-    'Bow',            // 5
-    'Exotic',         // 6
-  ];
+  static List<String> get weaponQualities => data.weaponQualities;
+  static List<String> get weaponMaterials => data.weaponMaterials;
+  static List<String> get weaponTypes => data.weaponTypes;
 
   // === ARMOR (6) ===
-  static const List<String> armorQualities = [
-    'Broken',     // 1
-    'Improvised', // 2
-    'Tattered',   // 3
-    'Simple',     // 4
-    'Fine',       // 5
-    'Masterwork', // 6
-  ];
-
-  static const List<String> armorMaterials = [
-    'Cloth',      // 1
-    'Leather',    // 2
-    'Bone/Fur',   // 3
-    'Steel',      // 4
-    'Mithral',    // 5
-    'Adamantine', // 6
-  ];
-
-  static const List<String> armorTypes = [
-    'Headpiece', // 1
-    'Bottom',    // 2
-    'Gloves',    // 3
-    'Boots',     // 4
-    'Top',       // 5
-    'Shield',    // 6
-  ];
+  static List<String> get armorQualities => data.armorQualities;
+  static List<String> get armorMaterials => data.armorMaterials;
+  static List<String> get armorTypes => data.armorTypes;
 
   /// Treasure categories (d6)
-  static const List<String> treasureCategories = [
-    'Trinket',   // 1
-    'Treasure',  // 2
-    'Document',  // 3
-    'Accessory', // 4
-    'Weapon',    // 5
-    'Armor',     // 6
-  ];
+  static List<String> get treasureCategories => data.treasureCategories;
 
   ObjectTreasure([RollEngine? rollEngine])
       : _rollEngine = rollEngine ?? RollEngine();

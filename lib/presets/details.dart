@@ -1,80 +1,28 @@
 import '../core/roll_engine.dart';
 import '../models/roll_result.dart';
+import '../data/details_data.dart' as data;
 
 /// Details generator preset for the Juice Oracle.
 /// Uses details.md for colors, properties, and history.
 class Details {
   final RollEngine _rollEngine;
 
+  // ========== Static Accessors (delegate to data file) ==========
+
   /// Colors - d10
-  static const List<String> colors = [
-    'Shade Black',       // 1
-    'Leather Brown',     // 2
-    'Highlight Yellow',  // 3
-    'Forest Green',      // 4
-    'Cobalt Blue',       // 5
-    'Crimson Red',       // 6
-    'Royal Violet',      // 7
-    'Metallic Silver',   // 8
-    'Midas Gold',        // 9
-    'Holy White',        // 0/10
-  ];
+  static List<String> get colors => data.colors;
 
   /// Color emoji (for display)
-  static const List<String> colorEmoji = [
-    '⬛', // Black
-    '🟫', // Brown
-    '🟨', // Yellow
-    '🟩', // Green
-    '🟦', // Blue
-    '🟥', // Red
-    '🟪', // Violet
-    '⬜', // Silver
-    '🟨', // Gold
-    '⬜', // White
-  ];
+  static List<String> get colorEmoji => data.colorEmoji;
 
   /// Properties - d10
-  static const List<String> properties = [
-    'Age',        // 1
-    'Durability', // 2
-    'Familiarity',// 3
-    'Power',      // 4
-    'Quality',    // 5
-    'Rarity',     // 6
-    'Size',       // 7
-    'Style',      // 8
-    'Value',      // 9
-    'Weight',     // 0/10
-  ];
+  static List<String> get properties => data.properties;
 
   /// Detail modifiers - d10
-  static const List<String> detailModifiers = [
-    'Negative Emotion',  // 1
-    'Disfavors PC',      // 2
-    'Disfavors Thread',  // 3
-    'Disfavors NPC',     // 4
-    'History',           // 5 (italic - roll on history)
-    'Property',          // 6 (italic - roll on property)
-    'Favors NPC',        // 7
-    'Favors Thread',     // 8
-    'Favors PC',         // 9
-    'Positive Emotion',  // 0/10
-  ];
+  static List<String> get detailModifiers => data.detailModifiers;
 
   /// History context - d10
-  static const List<String> histories = [
-    'Backstory',        // 1
-    'Past Thread',      // 2
-    'Previous Thread',  // 3
-    'Past Scene',       // 4
-    'Previous Scene',   // 5
-    'Current Thread',   // 6
-    'Past Action',      // 7
-    'Current Scene',    // 8
-    'Previous Action',  // 9
-    'Current Action',   // 0/10
-  ];
+  static List<String> get histories => data.histories;
 
   Details([RollEngine? rollEngine])
       : _rollEngine = rollEngine ?? RollEngine();
