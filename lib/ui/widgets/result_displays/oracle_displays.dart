@@ -44,6 +44,24 @@ void registerOracleDisplays() {
 
 Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
   final isPositive = result.outcome.isYes;
+  final isContextual = result.outcome.isContextual;
+  
+  // Determine colors based on outcome type
+  // Contextual results (Favorable/Unfavorable) use neutral colors
+  // since the Yes/No depends on context, not the dice
+  Color outcomeColor;
+  Color outcomeBgColor;
+  if (isContextual) {
+    // Use gold for contextual results - indicates "you decide based on context"
+    outcomeColor = JuiceTheme.gold;
+    outcomeBgColor = JuiceTheme.gold.withValues(alpha: 0.2);
+  } else if (isPositive) {
+    outcomeColor = JuiceTheme.success;
+    outcomeBgColor = JuiceTheme.success.withValues(alpha: 0.2);
+  } else {
+    outcomeColor = JuiceTheme.danger;
+    outcomeBgColor = JuiceTheme.danger.withValues(alpha: 0.2);
+  }
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,24 +97,25 @@ Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: isPositive
-                  ? JuiceTheme.success.withValues(alpha: 0.2)
-                  : JuiceTheme.danger.withValues(alpha: 0.2),
+              color: outcomeBgColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
-              ),
+              border: Border.all(color: outcomeColor),
             ),
             child: Text(
               result.outcome.displayText,
               style: TextStyle(
-                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+                color: outcomeColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ],
       ),
+      // Contextual guidance for Favorable/Unfavorable results
+      if (isContextual) ...[
+        const SizedBox(height: 8),
+        _buildContextualGuidanceWidget(result.outcome, theme),
+      ],
       // Special trigger (Random Event / Invalid Assumption)
       if (result.hasSpecialTrigger) ...[
         const SizedBox(height: 8),
@@ -187,6 +206,98 @@ Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
   );
 }
 
+/// Builds a contextual guidance widget for Favorable/Unfavorable outcomes.
+/// 
+/// These outcomes are unique in Juice because they don't provide a direct Yes/No
+/// answer. Instead, the player must determine what answer would most help or hurt
+/// their character in the current situation.
+Widget _buildContextualGuidanceWidget(FateCheckOutcome outcome, ThemeData theme) {
+  final isFavorable = outcome == FateCheckOutcome.favorable;
+  final guidance = outcome.contextualGuidance;
+  final examples = outcome.exampleInterpretations;
+  
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: JuiceTheme.gold.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: JuiceTheme.gold.withValues(alpha: 0.4)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with icon
+        Row(
+          children: [
+            Icon(
+              isFavorable ? Icons.thumb_up_outlined : Icons.thumb_down_outlined,
+              size: 16,
+              color: JuiceTheme.gold,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                isFavorable 
+                    ? 'What helps your character?' 
+                    : 'What hurts your character?',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: JuiceTheme.gold,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // Guidance text
+        if (guidance != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            guidance,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: JuiceTheme.parchment,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+        // Example interpretations
+        if (examples != null && examples.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: JuiceTheme.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Examples:',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: JuiceTheme.parchmentDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...examples.map((example) => Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '• $example',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: JuiceTheme.parchment.withValues(alpha: 0.9),
+                      fontSize: 11,
+                    ),
+                  ),
+                )),
+              ],
+            ),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
 // =============================================================================
 // EXPECTATION CHECK DISPLAY
 // =============================================================================
@@ -194,8 +305,23 @@ Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
 Widget buildExpectationCheckDisplay(ExpectationCheckResult result, ThemeData theme) {
   // Determine if outcome is positive based on outcome type
   final isPositive = result.outcome == ExpectationOutcome.expected ||
-      result.outcome == ExpectationOutcome.expectedIntensified ||
-      result.outcome == ExpectationOutcome.favorable;
+      result.outcome == ExpectationOutcome.expectedIntensified;
+  final isContextual = result.outcome.isContextual;
+  
+  // Determine colors based on outcome type
+  // Contextual results (Favorable/Unfavorable) use neutral colors
+  Color outcomeColor;
+  Color outcomeBgColor;
+  if (isContextual) {
+    outcomeColor = JuiceTheme.gold;
+    outcomeBgColor = JuiceTheme.gold.withValues(alpha: 0.2);
+  } else if (isPositive) {
+    outcomeColor = JuiceTheme.success;
+    outcomeBgColor = JuiceTheme.success.withValues(alpha: 0.2);
+  } else {
+    outcomeColor = JuiceTheme.danger;
+    outcomeBgColor = JuiceTheme.danger.withValues(alpha: 0.2);
+  }
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,24 +339,25 @@ Widget buildExpectationCheckDisplay(ExpectationCheckResult result, ThemeData the
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: isPositive
-                  ? JuiceTheme.success.withValues(alpha: 0.2)
-                  : JuiceTheme.danger.withValues(alpha: 0.2),
+              color: outcomeBgColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
-              ),
+              border: Border.all(color: outcomeColor),
             ),
             child: Text(
               result.outcome.displayText,
               style: TextStyle(
-                color: isPositive ? JuiceTheme.success : JuiceTheme.danger,
+                color: outcomeColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ],
       ),
+      // Contextual guidance for Favorable/Unfavorable
+      if (isContextual) ...[
+        const SizedBox(height: 8),
+        _buildExpectationContextualGuidance(result.outcome, theme),
+      ],
       // Show auto-rolled meaning for Modified Idea outcome
       if (result.hasMeaning && result.meaningResult != null) ...[
         const SizedBox(height: 8),
@@ -264,6 +391,61 @@ Widget buildExpectationCheckDisplay(ExpectationCheckResult result, ThemeData the
         ),
       ],
     ],
+  );
+}
+
+/// Builds contextual guidance for Expectation Check Favorable/Unfavorable.
+/// 
+/// Unlike Fate Check, these modify your expectation rather than answering
+/// a yes/no question. The player still needs to determine how their
+/// expectation is twisted to help or hurt them.
+Widget _buildExpectationContextualGuidance(ExpectationOutcome outcome, ThemeData theme) {
+  final isFavorable = outcome == ExpectationOutcome.favorable;
+  final guidance = outcome.contextualGuidance;
+  
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: JuiceTheme.gold.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: JuiceTheme.gold.withValues(alpha: 0.4)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              isFavorable ? Icons.thumb_up_outlined : Icons.thumb_down_outlined,
+              size: 16,
+              color: JuiceTheme.gold,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                isFavorable 
+                    ? 'Expectation twisted in your favor' 
+                    : 'Expectation twisted against you',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: JuiceTheme.gold,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (guidance != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            guidance,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: JuiceTheme.parchment,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ],
+    ),
   );
 }
 

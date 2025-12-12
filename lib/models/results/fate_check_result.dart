@@ -88,9 +88,9 @@ extension FateCheckOutcomeDisplay on FateCheckOutcome {
       case FateCheckOutcome.noBut:
         return 'No - but with a silver lining';
       case FateCheckOutcome.unfavorable:
-        return 'The answer is whatever is LEAST favorable to your character';
+        return 'The answer is whatever outcome would HURT your character most in this situation';
       case FateCheckOutcome.favorable:
-        return 'The answer is whatever is MOST favorable to your character';
+        return 'The answer is whatever outcome would HELP your character most in this situation';
       case FateCheckOutcome.yesBut:
         return 'Yes - but with a complication';
       case FateCheckOutcome.yes:
@@ -99,6 +99,38 @@ extension FateCheckOutcomeDisplay on FateCheckOutcome {
         return 'Yes - use Intensity to determine the reason why';
       case FateCheckOutcome.yesAnd:
         return 'Strong Yes - with additional benefit';
+    }
+  }
+
+  /// Get contextual guidance for favorable/unfavorable results.
+  /// Returns null for non-contextual outcomes.
+  String? get contextualGuidance {
+    switch (this) {
+      case FateCheckOutcome.favorable:
+        return 'Consider your character\'s current goal. What answer would help them succeed?';
+      case FateCheckOutcome.unfavorable:
+        return 'Consider your character\'s current goal. What answer would create the most difficulty?';
+      default:
+        return null;
+    }
+  }
+
+  /// Get example interpretations for favorable/unfavorable.
+  /// Based on the tavern example from Juice instructions.
+  List<String>? get exampleInterpretations {
+    switch (this) {
+      case FateCheckOutcome.favorable:
+        return [
+          'Looking for someone? → "No, not busy" (easy to spot them)',
+          'Trying to hide? → "Yes, busy" (easier to blend in)',
+        ];
+      case FateCheckOutcome.unfavorable:
+        return [
+          'Looking for someone? → "Yes, busy" (hard to find them)',
+          'Trying to hide? → "No, not busy" (you stand out)',
+        ];
+      default:
+        return null;
     }
   }
 

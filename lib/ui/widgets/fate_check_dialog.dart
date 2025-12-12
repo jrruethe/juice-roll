@@ -118,7 +118,11 @@ class _FateCheckDialogState extends State<FateCheckDialog> {
                             _ReferenceRow(symbol: '++', result: 'Yes And'),
                             _ReferenceRow(symbol: '+0', result: 'Yes Because'),
                             _ReferenceRow(symbol: '+-', result: 'Yes But'),
-                            _ReferenceRow(symbol: '0+', result: 'Favorable'),
+                            _ReferenceRow(
+                              symbol: '0+', 
+                              result: 'Favorable*',
+                              tooltip: 'Answer = what HELPS your character',
+                            ),
                             _ReferenceRow(symbol: '<0', result: 'Random Event'),
                           ],
                         ),
@@ -129,7 +133,11 @@ class _FateCheckDialogState extends State<FateCheckDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _ReferenceRow(symbol: '>0', result: 'Invalid'),
-                            _ReferenceRow(symbol: '0-', result: 'Unfavorable'),
+                            _ReferenceRow(
+                              symbol: '0-', 
+                              result: 'Unfavorable*',
+                              tooltip: 'Answer = what HURTS your character',
+                            ),
                             _ReferenceRow(symbol: '-+', result: 'No But'),
                             _ReferenceRow(symbol: '-0', result: 'No Because'),
                             _ReferenceRow(symbol: '--', result: 'No And'),
@@ -293,12 +301,13 @@ class _LikelihoodTile extends StatelessWidget {
 class _ReferenceRow extends StatelessWidget {
   final String symbol;
   final String result;
+  final String? tooltip;
 
-  const _ReferenceRow({required this.symbol, required this.result});
+  const _ReferenceRow({required this.symbol, required this.result, this.tooltip});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    Widget row = Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         children: [
@@ -314,18 +323,43 @@ class _ReferenceRow extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            result,
-            style: const TextStyle(fontSize: 10),
+          Expanded(
+            child: Text(
+              result,
+              style: TextStyle(
+                fontSize: 10,
+                color: tooltip != null ? JuiceTheme.gold : null,
+                fontWeight: tooltip != null ? FontWeight.w500 : null,
+              ),
+            ),
           ),
+          if (tooltip != null)
+            Icon(Icons.help_outline, size: 10, color: JuiceTheme.gold.withOpacity(0.6)),
         ],
       ),
     );
+    
+    if (tooltip != null) {
+      return Tooltip(
+        message: tooltip!,
+        preferBelow: true,
+        textStyle: const TextStyle(fontSize: 11, color: Colors.white),
+        decoration: BoxDecoration(
+          color: JuiceTheme.surface,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: JuiceTheme.gold.withOpacity(0.5)),
+        ),
+        child: row,
+      );
+    }
+    return row;
   }
 
   Color _getSymbolColor() {
     if (symbol.startsWith('+')) return JuiceTheme.success;
     if (symbol.startsWith('-')) return JuiceTheme.danger;
+    // Use gold for contextual outcomes (0+, 0-)
+    if (symbol == '0+' || symbol == '0-') return JuiceTheme.gold;
     if (symbol.startsWith('0') || symbol.startsWith('<') || symbol.startsWith('>')) {
       return JuiceTheme.info;
     }

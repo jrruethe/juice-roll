@@ -46,11 +46,11 @@ extension ExpectationOutcomeDisplay on ExpectationOutcome {
       case ExpectationOutcome.nextMostExpected:
         return 'Not your first expectation, but your second choice occurs.';
       case ExpectationOutcome.favorable:
-        return 'Your expectation is modified in your favor.';
+        return 'Your expectation is modified in a way that HELPS your character.';
       case ExpectationOutcome.modifiedIdea:
         return 'Use the Modifier + Idea result to alter your expectation.';
       case ExpectationOutcome.unfavorable:
-        return 'Your expectation is modified against your favor.';
+        return 'Your expectation is modified in a way that HURTS your character.';
       case ExpectationOutcome.opposite:
         return 'The opposite of your expectation occurs.';
       case ExpectationOutcome.oppositeIntensified:
@@ -77,6 +77,24 @@ extension ExpectationOutcomeDisplay on ExpectationOutcome {
         return 'NPC does the opposite of what you expected.';
       case ExpectationOutcome.oppositeIntensified:
         return 'NPC does the opposite of what you expected, emphatically!';
+    }
+  }
+
+  /// Whether this is context-dependent (favorable/unfavorable).
+  bool get isContextual {
+    return this == ExpectationOutcome.favorable ||
+           this == ExpectationOutcome.unfavorable;
+  }
+
+  /// Get contextual guidance for favorable/unfavorable results.
+  String? get contextualGuidance {
+    switch (this) {
+      case ExpectationOutcome.favorable:
+        return 'Your expectation is mostly correct, but with a twist that benefits you.';
+      case ExpectationOutcome.unfavorable:
+        return 'Your expectation is mostly correct, but with a twist that creates difficulty.';
+      default:
+        return null;
     }
   }
 }

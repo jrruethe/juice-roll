@@ -151,12 +151,22 @@ class ExpectationCheckDialog extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          // Modifier outcomes (neutral zone)
-          const Row(
+          // Modifier outcomes (contextual - what helps/hurts character)
+          Row(
             children: [
-              _ExpectOutcomeChip(dice: '○+', label: 'Favorable', color: JuiceTheme.info),
-              SizedBox(width: 4),
-              _ExpectOutcomeChip(dice: '○−', label: 'Unfavorable', color: JuiceTheme.categoryWorld),
+              _ExpectOutcomeChip(
+                dice: '○+', 
+                label: 'Favorable*', 
+                color: JuiceTheme.gold,
+                tooltip: 'HELPS your character\'s situation.\nAsk: What modification benefits them?',
+              ),
+              const SizedBox(width: 4),
+              _ExpectOutcomeChip(
+                dice: '○−', 
+                label: 'Unfavorable*', 
+                color: JuiceTheme.gold,
+                tooltip: 'HURTS your character\'s situation.\nAsk: What modification works against them?',
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -249,6 +259,7 @@ class _ExpectOutcomeChip extends StatelessWidget {
   final Color color;
   final bool isIntense;
   final bool isSpecial;
+  final String? tooltip;
 
   const _ExpectOutcomeChip({
     required this.dice,
@@ -256,59 +267,76 @@ class _ExpectOutcomeChip extends StatelessWidget {
     required this.color,
     this.isIntense = false,
     this.isSpecial = false,
+    this.tooltip,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-        decoration: BoxDecoration(
-          color: color.withOpacity(isIntense || isSpecial ? 0.15 : 0.08),
-          borderRadius: BorderRadius.circular(4),
-          border: isIntense || isSpecial
-              ? Border.all(color: color.withOpacity(0.4), width: 1)
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Text(
-                dice,
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace',
-                  color: color,
-                ),
+    Widget container = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(isIntense || isSpecial ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(4),
+        border: isIntense || isSpecial || tooltip != null
+            ? Border.all(color: color.withOpacity(0.4), width: 1)
+            : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Text(
+              dice,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'monospace',
+                color: color,
               ),
             ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: isIntense ? FontWeight.bold : FontWeight.normal,
-                  color: color,
-                ),
-                overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: isIntense || tooltip != null ? FontWeight.bold : FontWeight.normal,
+                color: color,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
-            if (isIntense)
-              Icon(Icons.whatshot, size: 10, color: color),
-            if (isSpecial)
-              Icon(Icons.auto_awesome, size: 10, color: color),
-          ],
-        ),
+          ),
+          if (isIntense)
+            Icon(Icons.whatshot, size: 10, color: color),
+          if (isSpecial)
+            Icon(Icons.auto_awesome, size: 10, color: color),
+          if (tooltip != null)
+            Icon(Icons.help_outline, size: 9, color: color.withOpacity(0.6)),
+        ],
       ),
     );
+    
+    Widget content = tooltip != null
+        ? Tooltip(
+            message: tooltip!,
+            preferBelow: true,
+            textStyle: const TextStyle(fontSize: 11, color: Colors.white),
+            decoration: BoxDecoration(
+              color: JuiceTheme.surface,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: color.withOpacity(0.5)),
+            ),
+            child: container,
+          )
+        : container;
+    
+    return Expanded(child: content);
   }
 }
 
