@@ -69,6 +69,96 @@ class ScaleResult extends RollResult {
   /// Whether this is no change.
   bool get isNoChange => multiplier == 1.0;
 
+  /// Get the math breakdown showing how the dice combine.
+  /// Example: "(+1) + (+1) + 3 = 5 → +10%"
+  String get mathBreakdown {
+    final d1 = fateDice[0];
+    final d2 = fateDice[1];
+    final d1Str = d1 > 0 ? '+$d1' : '$d1';
+    final d2Str = d2 > 0 ? '+$d2' : '$d2';
+    return '($d1Str) + ($d2Str) + $intensity = $total';
+  }
+
+  /// Get contextual guidance for what the result means.
+  String get contextualGuidance {
+    if (isNoChange) {
+      return 'The value stays as expected. No adjustment needed.';
+    } else if (isIncrease) {
+      return 'The value is higher than expected. Consider why it might be more.';
+    } else {
+      return 'The value is lower than expected. Consider why it might be less.';
+    }
+  }
+
+  /// Get example use cases for the Scale result.
+  List<String> get exampleUseCases {
+    if (isNoChange) {
+      return [
+        'Shop price: Fair market value',
+        'Monster HP: Standard for this type',
+        'Travel time: Normal conditions',
+      ];
+    } else if (isIncrease) {
+      switch (modifier) {
+        case '+10%':
+          return [
+            'Shop price: Slightly marked up, popular item',
+            'Monster HP: Well-fed, healthy specimen',
+            'Travel time: Minor detour or delay',
+          ];
+        case '+25%':
+          return [
+            'Shop price: Premium quality or limited stock',
+            'Monster HP: Stronger than usual, battle-scarred',
+            'Travel time: Bad weather slowing progress',
+          ];
+        case '+50%':
+          return [
+            'Shop price: Rare item, high demand',
+            'Monster HP: Alpha of the pack, veteran',
+            'Travel time: Significant obstacles',
+          ];
+        case '+100%':
+          return [
+            'Shop price: Extreme scarcity or luxury goods',
+            'Monster HP: Legendary specimen, ancient',
+            'Travel time: Major complications, double the journey',
+          ];
+        default:
+          return [];
+      }
+    } else {
+      switch (modifier) {
+        case '-10%':
+          return [
+            'Shop price: Small discount, friendly merchant',
+            'Monster HP: Slightly weakened',
+            'Travel time: Good weather, clear roads',
+          ];
+        case '-25%':
+          return [
+            'Shop price: Sale or bulk discount',
+            'Monster HP: Wounded, not at full strength',
+            'Travel time: Favorable conditions, shortcuts',
+          ];
+        case '-50%':
+          return [
+            'Shop price: Desperate seller, damaged goods',
+            'Monster HP: Badly injured, half dead',
+            'Travel time: Excellent conditions, fast travel',
+          ];
+        case '-100%':
+          return [
+            'Shop price: Free! Gift or stolen goods',
+            'Monster HP: Already dying, no fight left',
+            'Travel time: Instantaneous, teleportation?',
+          ];
+        default:
+          return [];
+      }
+    }
+  }
+
   @override
   String toString() => 'Scale: [$fateSymbols] + $intensity = $modifier';
 }

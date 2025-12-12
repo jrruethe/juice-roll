@@ -978,7 +978,134 @@ Widget buildScaleDisplay(ScaleResult result, ThemeData theme) {
           ),
         ],
       ),
+      // Math breakdown showing how dice combine
+      const SizedBox(height: 8),
+      _buildScaleMathBreakdown(result, color, theme),
+      // Guidance with examples
+      const SizedBox(height: 8),
+      _buildScaleGuidanceWidget(result, color, theme),
     ],
+  );
+}
+
+/// Builds a widget showing the math breakdown for Scale.
+/// Shows: "(+1) + (+1) + 3 = 5 → +10%"
+Widget _buildScaleMathBreakdown(ScaleResult result, Color color, ThemeData theme) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: JuiceTheme.surface.withValues(alpha: 0.5),
+      borderRadius: BorderRadius.circular(6),
+      border: Border.all(color: JuiceTheme.parchmentDark.withValues(alpha: 0.2)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.calculate_outlined,
+          size: 14,
+          color: JuiceTheme.parchmentDark,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          result.mathBreakdown,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontFamily: JuiceTheme.fontFamilyMono,
+            color: JuiceTheme.parchmentDark,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Icon(
+          Icons.arrow_forward,
+          size: 12,
+          color: color,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          result.modifier,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontFamily: JuiceTheme.fontFamilyMono,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Builds guidance widget for Scale results with examples.
+Widget _buildScaleGuidanceWidget(ScaleResult result, Color color, ThemeData theme) {
+  final examples = result.exampleUseCases;
+  
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: color.withValues(alpha: 0.4)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with guidance
+        Row(
+          children: [
+            Icon(
+              result.isNoChange
+                  ? Icons.balance
+                  : (result.isIncrease ? Icons.trending_up : Icons.trending_down),
+              size: 16,
+              color: color,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                result.contextualGuidance,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // Examples
+        if (examples.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: JuiceTheme.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Examples:',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: JuiceTheme.parchmentDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...examples.map((example) => Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '• $example',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: JuiceTheme.parchment.withValues(alpha: 0.9),
+                      fontSize: 11,
+                    ),
+                  ),
+                )),
+              ],
+            ),
+          ),
+        ],
+      ],
+    ),
   );
 }
 
