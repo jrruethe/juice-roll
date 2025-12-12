@@ -144,6 +144,18 @@ const List<String> keyedEventExamples = [
 /// Extended guidance for specific event focuses.
 /// These provide deeper context beyond the basic description.
 const Map<String, String> eventFocusExtendedGuidance = {
+  'Advance Time':
+    'This is a bookkeeping prompt—don\'t just skip it! Time passing affects the world: '
+    'weather changes, NPCs complete tasks, villains progress their plans.',
+  'Close Thread':
+    'New threads will naturally form through play. It\'s only natural for threads '
+    'to end without your intervention as time passes. This keeps your list manageable.',
+  'Converge Thread':
+    'Sometimes, seemingly unrelated storylines become more connected than you first thought. '
+    'When this is revealed, it can produce an exciting and complex plot.',
+  'Diverge Thread':
+    'Bad things happen. Sometimes your character gets distracted, outside forces intervene, '
+    'or you come to a fork in the road. If current thread: maybe it splits into two threads.',
   'Immersion':
     'Roll for a sense (See, Hear, Smell, Feel), a location (behind, in front, etc.), '
     'and optionally "what it causes" from the Emotion table. '
@@ -151,15 +163,33 @@ const Map<String, String> eventFocusExtendedGuidance = {
   'Keyed Event':
     'Think of it like a timer—things you want to happen eventually. '
     'Examples: "Random Zombie Attack", "The BBEG appears", "Earthquake!"',
+  'New Character':
+    'Characters don\'t need to be people—could be a sentient sword, a dragon, '
+    'or an extremely important plot-based item. NPCs make the world come alive!',
   'NPC Action':
     'The NPC should act on their own—they aren\'t sitting around idle. '
     'Consider their personality, needs, and motives from the NPC tables.',
-  'Close Thread':
-    'New threads will naturally form through play. It\'s only natural for threads '
-    'to end without your intervention as time passes.',
+  'Plot Armor':
+    'This is rare—accept the gift! The oracle leans towards challenges and setbacks. '
+    'Plot Armor is your lifeline. No need to explain it—just take the win.',
   'Remote Event':
     'The rest of the world is still progressing forward. This event may become '
     'known or relevant later—track it for future News rolls.',
+};
+
+/// Prompt questions for each event focus.
+/// These help guide interpretation by asking the right question.
+const Map<String, String> eventFocusPrompts = {
+  'Advance Time': 'What has changed while time passed?',
+  'Close Thread': 'Why did this thread end? What does it mean for the story?',
+  'Converge Thread': 'What connection between these threads was just revealed?',
+  'Diverge Thread': 'What obstacle or distraction pulls you away?',
+  'Immersion': 'What sensory detail draws your attention right now?',
+  'Keyed Event': 'Which prepared event happens now?',
+  'New Character': 'Who or what appears in the scene?',
+  'NPC Action': 'What does this character do? Why now?',
+  'Plot Armor': 'How is your current problem suddenly solved?',
+  'Remote Event': 'What happens far away that you don\'t yet know about?',
 };
 
 /// Modifier words - d10 (from random-tables.md)
