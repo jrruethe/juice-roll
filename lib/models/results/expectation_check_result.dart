@@ -48,7 +48,7 @@ extension ExpectationOutcomeDisplay on ExpectationOutcome {
       case ExpectationOutcome.favorable:
         return 'Your expectation is modified in a way that HELPS your character.';
       case ExpectationOutcome.modifiedIdea:
-        return 'Use the Modifier + Idea result to alter your expectation.';
+        return 'Your expectation is altered by the Modifier + Idea below. Use them to twist what you expected.';
       case ExpectationOutcome.unfavorable:
         return 'Your expectation is modified in a way that HURTS your character.';
       case ExpectationOutcome.opposite:
@@ -70,7 +70,7 @@ extension ExpectationOutcomeDisplay on ExpectationOutcome {
       case ExpectationOutcome.favorable:
         return 'NPC behavior benefits you more than expected.';
       case ExpectationOutcome.modifiedIdea:
-        return 'Use the Modifier + Idea result to determine NPC action.';
+        return 'The NPC\'s action is inspired by the Modifier + Idea. How does it twist their behavior?';
       case ExpectationOutcome.unfavorable:
         return 'NPC behavior is less helpful than expected.';
       case ExpectationOutcome.opposite:
@@ -86,16 +86,32 @@ extension ExpectationOutcomeDisplay on ExpectationOutcome {
            this == ExpectationOutcome.unfavorable;
   }
 
-  /// Get contextual guidance for favorable/unfavorable results.
+  /// Whether this is the Modified Idea outcome.
+  bool get isModifiedIdea {
+    return this == ExpectationOutcome.modifiedIdea;
+  }
+
+  /// Get contextual guidance for outcomes that need player interpretation.
   String? get contextualGuidance {
     switch (this) {
       case ExpectationOutcome.favorable:
         return 'Your expectation is mostly correct, but with a twist that benefits you.';
       case ExpectationOutcome.unfavorable:
         return 'Your expectation is mostly correct, but with a twist that creates difficulty.';
+      case ExpectationOutcome.modifiedIdea:
+        return 'Something unexpected. Let these words inspire how your expectation twists.';
       default:
         return null;
     }
+  }
+
+  /// Get interpretation prompts for Modified Idea.
+  List<String>? get modifiedIdeaPrompts {
+    if (this != ExpectationOutcome.modifiedIdea) return null;
+    return [
+      'What new element does this add to the situation?',
+      'How does this change what you expected to happen?',
+    ];
   }
 }
 

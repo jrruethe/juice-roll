@@ -614,37 +614,10 @@ Widget buildExpectationCheckDisplay(ExpectationCheckResult result, ThemeData the
         const SizedBox(height: 8),
         _buildExpectationContextualGuidance(result.outcome, theme),
       ],
-      // Show auto-rolled meaning for Modified Idea outcome
-      if (result.hasMeaning && result.meaningResult != null) ...[
+      // Show guidance and auto-rolled meaning for Modified Idea outcome
+      if (result.outcome.isModifiedIdea && result.hasMeaning && result.meaningResult != null) ...[
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: JuiceTheme.mystic.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
-          ),
-          child: Row(
-            children: [
-              Text(
-                result.meaningResult!.adjective,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: JuiceTheme.mystic,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                result.meaningResult!.noun,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: JuiceTheme.gold,
-                ),
-              ),
-            ],
-          ),
-        ),
+        _buildModifiedIdeaGuidanceWidget(result.outcome, result.meaningResult!, theme),
       ],
     ],
   );
@@ -697,6 +670,149 @@ Widget _buildExpectationContextualGuidance(ExpectationOutcome outcome, ThemeData
             style: theme.textTheme.bodySmall?.copyWith(
               color: JuiceTheme.parchment,
               fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+/// Builds a guidance widget for "Modified Idea" results in Expectation Check.
+/// 
+/// This is triggered by double blanks (00) and provides a Modifier + Idea pair
+/// that the player uses to creatively alter their expectation in an unexpected way.
+Widget _buildModifiedIdeaGuidanceWidget(ExpectationOutcome outcome, DiscoverMeaningResult meaningResult, ThemeData theme) {
+  final guidance = outcome.contextualGuidance;
+  final prompts = outcome.modifiedIdeaPrompts;
+  
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: JuiceTheme.juiceOrange.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: JuiceTheme.juiceOrange.withValues(alpha: 0.4)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with icon
+        Row(
+          children: [
+            Icon(
+              Icons.shuffle,
+              size: 16,
+              color: JuiceTheme.juiceOrange,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'Use this to twist your expectation:',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: JuiceTheme.juiceOrange,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // The Modifier + Idea words - prominently displayed with labels
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: JuiceTheme.surface.withValues(alpha: 0.8),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: JuiceTheme.juiceOrange.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Modifier column
+              Column(
+                children: [
+                  Text(
+                    'Modifier',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: JuiceTheme.parchmentDark,
+                      fontSize: 9,
+                    ),
+                  ),
+                  Text(
+                    meaningResult.adjective,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: JuiceTheme.mystic,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 16),
+              // Idea column
+              Column(
+                children: [
+                  Text(
+                    'Idea',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: JuiceTheme.parchmentDark,
+                      fontSize: 9,
+                    ),
+                  ),
+                  Text(
+                    meaningResult.noun,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: JuiceTheme.gold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Guidance text
+        if (guidance != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            guidance,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: JuiceTheme.parchment,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+        // Interpretation prompts
+        if (prompts != null && prompts.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: JuiceTheme.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ask yourself:',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: JuiceTheme.parchmentDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...prompts.map((prompt) => Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '• $prompt',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: JuiceTheme.parchment.withValues(alpha: 0.9),
+                      fontSize: 11,
+                    ),
+                  ),
+                )),
+              ],
             ),
           ),
         ],

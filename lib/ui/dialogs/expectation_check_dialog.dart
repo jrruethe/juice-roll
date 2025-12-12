@@ -171,11 +171,17 @@ class ExpectationCheckDialog extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           // Special & Opposite
-          const Row(
+          Row(
             children: [
-              _ExpectOutcomeChip(dice: '○○', label: 'Mod+Idea', color: JuiceTheme.juiceOrange, isSpecial: true),
-              SizedBox(width: 4),
-              _ExpectOutcomeChip(dice: '−○', label: 'Opposite', color: JuiceTheme.danger),
+              _ExpectOutcomeChip(
+                dice: '○○', 
+                label: 'Mod+Idea*', 
+                color: JuiceTheme.juiceOrange, 
+                isSpecial: true,
+                tooltip: 'Twist your expectation using the\nauto-rolled Modifier + Idea pair.',
+              ),
+              const SizedBox(width: 4),
+              const _ExpectOutcomeChip(dice: '−○', label: 'Opposite', color: JuiceTheme.danger),
             ],
           ),
           const SizedBox(height: 4),
