@@ -132,7 +132,11 @@ class _FateCheckDialogState extends State<FateCheckDialog> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _ReferenceRow(symbol: '>0', result: 'Invalid'),
+                            _ReferenceRow(
+                              symbol: '>0', 
+                              result: 'Invalid*',
+                              tooltip: 'Your question has a false assumption',
+                            ),
                             _ReferenceRow(
                               symbol: '0-', 
                               result: 'Unfavorable*',

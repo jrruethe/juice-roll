@@ -31,7 +31,31 @@ extension SpecialTriggerDisplay on SpecialTrigger {
       case SpecialTrigger.randomEvent:
         return 'Something unexpected happens. See the auto-rolled Random Event below.';
       case SpecialTrigger.invalidAssumption:
-        return 'Your assumption about the situation was wrong. Re-examine what you thought was true.';
+        return 'Something about your question was built on a false assumption. Re-examine what you thought was true.';
+    }
+  }
+
+  /// Get contextual guidance for special triggers.
+  String? get contextualGuidance {
+    switch (this) {
+      case SpecialTrigger.invalidAssumption:
+        return 'What did you assume to be true in your question? That assumption is wrong - discover why.';
+      case SpecialTrigger.randomEvent:
+        return null; // Random Event has its own display with rolled results
+    }
+  }
+
+  /// Get example interpretations for Invalid Assumption.
+  /// Based on examples from Juice instructions.
+  List<String>? get exampleInterpretations {
+    switch (this) {
+      case SpecialTrigger.invalidAssumption:
+        return [
+          '"Is the tavern busy?" → The tavern is closed',
+          '"Is the mushroom poisonous?" → It\'s not a mushroom at all',
+        ];
+      case SpecialTrigger.randomEvent:
+        return null;
     }
   }
 }

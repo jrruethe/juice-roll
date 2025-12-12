@@ -93,22 +93,23 @@ Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
             ),
           ),
           const Spacer(),
-          // Outcome chip
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: outcomeBgColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: outcomeColor),
-            ),
-            child: Text(
-              result.outcome.displayText,
-              style: TextStyle(
-                color: outcomeColor,
-                fontWeight: FontWeight.bold,
+          // Outcome chip - hide for Invalid Assumption since that IS the answer
+          if (result.specialTrigger != SpecialTrigger.invalidAssumption)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: outcomeBgColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: outcomeColor),
+              ),
+              child: Text(
+                result.outcome.displayText,
+                style: TextStyle(
+                  color: outcomeColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
         ],
       ),
       // Contextual guidance for Favorable/Unfavorable results
@@ -158,6 +159,11 @@ Widget buildFateCheckDisplay(FateCheckResult result, ThemeData theme) {
             ],
           ),
         ),
+      ],
+      // Invalid Assumption guidance
+      if (result.specialTrigger == SpecialTrigger.invalidAssumption) ...[
+        const SizedBox(height: 8),
+        _buildInvalidAssumptionGuidanceWidget(result.specialTrigger!, theme),
       ],
       // Auto-rolled Random Event details
       if (result.hasRandomEvent) ...[
@@ -242,6 +248,94 @@ Widget _buildContextualGuidanceWidget(FateCheckOutcome outcome, ThemeData theme)
                     : 'What hurts your character?',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: JuiceTheme.gold,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        // Guidance text
+        if (guidance != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            guidance,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: JuiceTheme.parchment,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+        // Example interpretations
+        if (examples != null && examples.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: JuiceTheme.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Examples:',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: JuiceTheme.parchmentDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...examples.map((example) => Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '• $example',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: JuiceTheme.parchment.withValues(alpha: 0.9),
+                      fontSize: 11,
+                    ),
+                  ),
+                )),
+              ],
+            ),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+/// Builds a guidance widget for Invalid Assumption results.
+/// 
+/// Invalid Assumption is unique because it means the question itself was based
+/// on a false premise. The player must re-examine what they thought was true.
+Widget _buildInvalidAssumptionGuidanceWidget(SpecialTrigger trigger, ThemeData theme) {
+  final guidance = trigger.contextualGuidance;
+  final examples = trigger.exampleInterpretations;
+  
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: JuiceTheme.mystic.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: JuiceTheme.mystic.withValues(alpha: 0.4)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with icon
+        Row(
+          children: [
+            Icon(
+              Icons.psychology_outlined,
+              size: 16,
+              color: JuiceTheme.mystic,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'What assumption was wrong?',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: JuiceTheme.mystic,
                   fontWeight: FontWeight.bold,
                 ),
               ),
