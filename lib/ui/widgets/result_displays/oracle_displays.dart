@@ -9,6 +9,7 @@ import '../../../presets/random_event.dart';
 import '../../../presets/discover_meaning.dart';
 import '../../theme/juice_theme.dart';
 import '../result_display_registry.dart';
+import '../../../data/fate_check_intensity_examples.dart';
 
 /// Oracle result display builders.
 /// 
@@ -408,7 +409,11 @@ Widget _buildBecauseGuidanceWidget(FateCheckOutcome outcome, int intensity, Stri
   
   // Color based on Yes/No
   final color = isYes ? JuiceTheme.success : JuiceTheme.danger;
-  
+
+  // Get compact example for this intensity
+  final example = fateCheckIntensityExamples[intensity] ?? '';
+  final prompt = fateCheckIntensityPrompts[intensity] ?? '';
+
   return Container(
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(
@@ -439,54 +444,33 @@ Widget _buildBecauseGuidanceWidget(FateCheckOutcome outcome, int intensity, Stri
             ),
           ],
         ),
-        // Guidance text
-        if (guidance != null) ...[
-          const SizedBox(height: 6),
+        // Compact example for this intensity
+        if (example.isNotEmpty) ...[
+          const SizedBox(height: 4),
           Text(
-            guidance,
+            example,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: JuiceTheme.parchment,
+              color: JuiceTheme.parchmentDark,
               fontStyle: FontStyle.italic,
+              fontSize: 11,
+            ),
+          ),
+        ],
+        // Compact narrative prompt for this intensity
+        if (prompt.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            prompt,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
             ),
           ),
         ],
         // Intensity scale visualization
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         _buildIntensityScale(intensity, color, theme),
-        // Example interpretations
-        if (examples != null && examples.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: JuiceTheme.surface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '"Is the tavern busy?"',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: JuiceTheme.parchmentDark,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                ...examples.map((example) => Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    '• $example',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: JuiceTheme.parchment.withValues(alpha: 0.9),
-                      fontSize: 11,
-                    ),
-                  ),
-                )),
-              ],
-            ),
-          ),
-        ],
       ],
     ),
   );
